@@ -10,7 +10,12 @@ import java.util.Collection;
  */
 public class ChessPiece {
 
+    private final ChessPiece.PieceType myType;
+    private final ChessGame.TeamColor myColor;
+
     public ChessPiece(ChessGame.TeamColor pieceColor, ChessPiece.PieceType type) {
+        myType = type;
+        myColor = pieceColor;
     }
 
     /**
@@ -29,14 +34,14 @@ public class ChessPiece {
      * @return Which team this chess piece belongs to
      */
     public ChessGame.TeamColor getTeamColor() {
-        throw new RuntimeException("Not implemented");
+        return myColor;
     }
 
     /**
      * @return which type of chess piece this piece is
      */
     public PieceType getPieceType() {
-        throw new RuntimeException("Not implemented");
+        return myType;
     }
 
     /**
@@ -47,6 +52,34 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
-        throw new RuntimeException("Not implemented");
+        // create base class that calculates piece moves (subclasses for each piece)
+        // responsibility of ChessPiece class is to simply store type,color for chess piece
+        // other responsibility of calculating piece moves is delegated to another set of classes
+
+        ChessPiece piece = board.getPiece(myPosition);
+        if (piece.getPieceType() == PieceType.KING) {
+            return new KingMovesCalculator().getMoves(board, myPosition);
+        }
+
+        if (piece.getPieceType() == PieceType.QUEEN) {
+            return new QueenMovesCalculator().getMoves(board, myPosition);
+        }
+
+        if (piece.getPieceType() == PieceType.KNIGHT) {
+            return new KnightMovesCalculator().getMoves(board, myPosition);
+        }
+
+        if (piece.getPieceType() == PieceType.BISHOP) {
+            return new BishopMovesCalculator().getMoves(board, myPosition);
+        }
+
+        if (piece.getPieceType() == PieceType.ROOK) {
+            return new RookMovesCalculator().getMoves(board, myPosition);
+        }
+
+        if (piece.getPieceType() == PieceType.PAWN) {
+            return new PawnMovesCalculator().getMoves(board, myPosition);
+        }
+        return null;
     }
 }
