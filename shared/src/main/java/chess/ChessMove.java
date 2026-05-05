@@ -58,4 +58,13 @@ public class ChessMove {
     public int hashCode() {
         return Objects.hash(myStart, myEnd, newPiece);
     }
+
+    @Override
+    public String toString() {
+        return "ChessMove{" +
+                "myStart=" + myStart +
+                ", myEnd=" + myEnd +
+                ", newPiece=" + newPiece +
+                '}';
+    }
 }
