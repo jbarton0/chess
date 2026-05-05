@@ -42,8 +42,22 @@ class KingMovesCalculator implements PieceMovesCalculator {
 }
 
 class QueenMovesCalculator implements PieceMovesCalculator {
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public Collection<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition) {
-        return List.of();
+        List<ChessMove> moves = new ArrayList<>();
+        Collection<ChessMove> diagonalMoves = new BishopMovesCalculator().getMoves(board, myPosition);
+        Collection<ChessMove> straightMoves = new RookMovesCalculator().getMoves(board, myPosition);
+        diagonalMoves.addAll(straightMoves);
+        return diagonalMoves;
     }
 }
 
