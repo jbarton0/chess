@@ -54,8 +54,58 @@ class KnightMovesCalculator implements PieceMovesCalculator {
 }
 
 class BishopMovesCalculator implements PieceMovesCalculator {
+    @Override
+    public boolean equals(Object obj) {
+        return super.equals(obj);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode();
+    }
+
     public Collection<ChessMove> getMoves(ChessBoard board, ChessPosition myPosition) {
-        return List.of();
+        List<ChessMove> moves = new ArrayList<>();
+        int row = myPosition.getRow()-1;
+        int col = myPosition.getColumn()-1;
+
+        boolean notBlocked = true;
+        for (int j = row, i = col; notBlocked && j >= 0 && i >= 0; j--, i--) {
+            // checks left and down
+            notBlocked = check(board, myPosition, moves, j, i, row, col);
+        }
+        notBlocked = true;
+        // checks right and down
+        for (int j = row, i = col; j>=0 && i < 8 && notBlocked; j--, i++) {
+            notBlocked = check(board, myPosition, moves, j, i, row, col);
+        }
+
+        notBlocked = true;
+        // checks left and up
+        for (int j = row, i = col; notBlocked && j < 8 && i>=0; j++, i--) {
+            notBlocked = check(board, myPosition, moves, j, i, row, col);
+        }
+        notBlocked = true;
+        //checking right and up
+        for (int j = row, i = col; j < 8 && i < 8 && notBlocked; j++, i++) {
+            notBlocked = check(board, myPosition, moves, j, i, row, col);
+        }
+        return moves;
+    }
+
+    private boolean check(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int j, int i, int row, int col) {
+        ChessPosition pos = new ChessPosition(j+1, i+1);
+        if (j != row || i != col) {
+            if (board.getPiece(pos) == null) {
+                moves.add(new ChessMove(myPosition, pos, null));
+            }
+            else if (board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
+                moves.add(new ChessMove(myPosition, pos, null));
+                return false;
+            }
+            else return false;
+        }
+        return true;
     }
 }
 
