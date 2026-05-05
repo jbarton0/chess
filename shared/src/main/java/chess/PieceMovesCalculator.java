@@ -296,28 +296,27 @@ class PawnMovesCalculator implements PieceMovesCalculator {
 
     private Collection<ChessMove> getWhiteMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int row, int col) {
         //if front not blocked
-        if (row < 8) {
+        if (row+1 < 8) {
             // if can capture (piece of other team diagonally left or right)
             if (col - 1 >= 0) {
                 ChessPosition enemyLeft = new ChessPosition(row + 2, col);
-                if (board.getPiece(enemyLeft) != null && board.getPiece(enemyLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition, enemyLeft, ChessPiece.PieceType.QUEEN));
-                }
+                if (board.getPiece(enemyLeft) != null && board.getPiece(enemyLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) getPromotionType(board, row+2, myPosition, enemyLeft, moves);
             }
             if (col + 1 < 8) {
                 ChessPosition enemyRight = new ChessPosition(row + 2, col + 2);
-                if (board.getPiece(enemyRight) != null && board.getPiece(enemyRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition, enemyRight, null));
-                }
+                if (board.getPiece(enemyRight) != null && board.getPiece(enemyRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) getPromotionType(board, row+2, myPosition, enemyRight, moves);
             }
             // if front clear, add front
-            // promote??
             if (board.getPiece(new ChessPosition(row+2, col+1)) == null) {
                 ChessPosition posFront = new ChessPosition(row+2, col+1);
-                moves.add(new ChessMove(myPosition, posFront, null));
+                getPromotionType(board, row+2, myPosition, posFront, moves);
+
                 // inside ^, if front's front also clear and pawn in second row, add that
-                if (board.getPiece(new ChessPosition(row + 3, col + 1)) == null && row == 1) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row + 3, col + 1), null));
+                if (row+2 < 8) {
+                    if (board.getPiece(new ChessPosition(row + 3, col + 1)) == null && row == 1) {
+                        ChessPosition posFront2 = new ChessPosition(row + 3, col + 1);
+                        getPromotionType(board, row + 3, myPosition, posFront2, moves);
+                    }
                 }
             }
         }
@@ -326,41 +325,45 @@ class PawnMovesCalculator implements PieceMovesCalculator {
 
     private Collection<ChessMove> getBlackMoves(ChessBoard board, ChessPosition myPosition, Collection<ChessMove> moves, int row, int col) {
         //if front not blocked
-        if (row < 8) {
+        if (row-1 >= 0) {
             // if can capture (piece of other team diagonally left or right)
             if (col - 1 >= 0) {
                 ChessPosition enemyLeft = new ChessPosition(row, col);
-                if (board.getPiece(enemyLeft) != null && board.getPiece(enemyLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition, enemyLeft, null));
-                }
+                if (board.getPiece(enemyLeft) != null && board.getPiece(enemyLeft).getTeamColor() != board.getPiece(myPosition).getTeamColor()) getPromotionType(board, row, myPosition, enemyLeft, moves);
             }
             if (col + 1 < 8) {
                 ChessPosition enemyRight = new ChessPosition(row, col + 2);
-                if (board.getPiece(enemyRight) != null && board.getPiece(enemyRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
-                    moves.add(new ChessMove(myPosition, enemyRight, null));
-                }
+                if (board.getPiece(enemyRight) != null && board.getPiece(enemyRight).getTeamColor() != board.getPiece(myPosition).getTeamColor()) getPromotionType(board, row, myPosition, enemyRight, moves);
             }
             // if front clear, add front
-            // promote??
             if (board.getPiece(new ChessPosition(row, col+1)) == null) {
                 ChessPosition posFront = new ChessPosition(row, col+1);
-                moves.add(new ChessMove(myPosition, posFront, null));
+                getPromotionType(board, row, myPosition, posFront, moves);
+
                 // inside ^, if front's front also clear and pawn in second row, add that
-                if (board.getPiece(new ChessPosition(row -1, col + 1)) == null && row == 6) {
-                    moves.add(new ChessMove(myPosition, new ChessPosition(row - 1, col + 1), null));
+                if (row-2 >= 0) {
+                    if (board.getPiece(new ChessPosition(row -1, col + 1)) == null && row == 6) {
+                        ChessPosition posFront2 = new ChessPosition(row-1,col+1);
+                        getPromotionType(board, row-1, myPosition, posFront2, moves);
+                    }
                 }
             }
         }
         return moves;
     }
+
     private void getPromotionType(ChessBoard board, int row, ChessPosition before, ChessPosition after, Collection<ChessMove> moves) {
-        if (row == 0 || row == 7) {
-            List <ChessPiece.PieceType> list = new ArrayList<>();
-            list.add(ChessPiece.PieceType.QUEEN);
-            list.add(ChessPiece.PieceType.ROOK);
-            list.add(ChessPiece.PieceType.BISHOP);
-            list.add(ChessPiece.PieceType.KNIGHT);
-//            moves.add(new ChessMove(before, after, list));
+        if ((board.getPiece(after) == null && after.getRow() == 1) || (board.getPiece(after) == null && after.getRow() == 8)) {
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.KNIGHT));
+        }
+        else if (row == 1 && board.getPiece(before).getTeamColor() == ChessGame.TeamColor.BLACK || row == 8 && board.getPiece(before).getTeamColor() == ChessGame.TeamColor.WHITE) {
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.QUEEN));
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.ROOK));
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.BISHOP));
+            moves.add(new ChessMove(before, after, ChessPiece.PieceType.KNIGHT));
         }
         else moves.add(new ChessMove(before, after, null));
     }
