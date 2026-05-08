@@ -64,22 +64,17 @@ public class ChessBoard {
         }
 
         // the rest
-        board[0][0] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-        board[0][1] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        board[0][2] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        board[0][3] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.QUEEN);
-        board[0][4] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KING);
-        board[0][5] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.BISHOP);
-        board[0][6] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.KNIGHT);
-        board[0][7] = new ChessPiece(ChessGame.TeamColor.WHITE, ChessPiece.PieceType.ROOK);
-
-        board[7][0] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
-        board[7][1] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        board[7][2] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        board[7][3] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.QUEEN);
-        board[7][4] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KING);
-        board[7][5] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.BISHOP);
-        board[7][6] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.KNIGHT);
-        board[7][7] = new ChessPiece(ChessGame.TeamColor.BLACK, ChessPiece.PieceType.ROOK);
+        ChessGame.TeamColor color = ChessGame.TeamColor.WHITE;
+        for (int i : new int[]{0,7}) {
+            board[i][0] = new ChessPiece(color, ChessPiece.PieceType.ROOK);
+            board[i][1] = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+            board[i][2] = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+            board[i][3] = new ChessPiece(color, ChessPiece.PieceType.QUEEN);
+            board[i][4] = new ChessPiece(color, ChessPiece.PieceType.KING);
+            board[i][5] = new ChessPiece(color, ChessPiece.PieceType.BISHOP);
+            board[i][6] = new ChessPiece(color, ChessPiece.PieceType.KNIGHT);
+            board[i][7] = new ChessPiece(color, ChessPiece.PieceType.ROOK);
+            color = ChessGame.TeamColor.BLACK;
+        }
     }
 }
