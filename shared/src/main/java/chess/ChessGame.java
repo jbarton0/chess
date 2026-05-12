@@ -1,6 +1,7 @@
 package chess;
 
 import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * A class that can manage a chess game, making moves on a board
@@ -10,16 +11,20 @@ import java.util.Collection;
  */
 public class ChessGame {
 
-    public ChessGame() {
+    private TeamColor turn;
+//    private ChessBoard realBoard;
 
+
+    public ChessGame() {
+        turn = TeamColor.WHITE;
+//        realBoard = new ChessBoard();
+//        realBoard.resetBoard();
     }
 
     /**
      * @return Which team's turn it is
      */
-    public TeamColor getTeamTurn() {
-        throw new RuntimeException("Not implemented");
-    }
+    public TeamColor getTeamTurn() { return turn; }
 
     /**
      * Sets which teams turn it is
@@ -27,7 +32,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        throw new RuntimeException("Not implemented");
+        turn = team;
     }
 
     /**
@@ -46,7 +51,15 @@ public class ChessGame {
      * startPosition
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        throw new RuntimeException("Not implemented");
+//        Collection<ChessMove> possibleMoves = realBoard.getPiece(startPosition).pieceMoves(realBoard, startPosition);
+//        Collection<ChessMove> valid = new ArrayList<>();
+////        for (ChessMove move : possibleMoves) {
+////
+////        }
+//
+//
+//        if (valid.size()==0) return null;
+//        return valid;
     }
 
     /**
@@ -56,7 +69,11 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+//        Collection<ChessMove> moves = validMoves(move.getStartPosition());
+//        if (!moves.contains(move)) throw new InvalidMoveException("Invalid move");
+//        else {return;}
+        // update the state of the board
+        // move a piece from one place to another and deal with any things like pawn promotion
     }
 
     /**
