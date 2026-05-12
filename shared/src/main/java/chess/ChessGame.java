@@ -12,13 +12,13 @@ import java.util.ArrayList;
 public class ChessGame {
 
     private TeamColor turn;
-//    private ChessBoard realBoard;
+    private ChessBoard realBoard;
 
 
     public ChessGame() {
         turn = TeamColor.WHITE;
-//        realBoard = new ChessBoard();
-//        realBoard.resetBoard();
+        realBoard = new ChessBoard();
+        realBoard.resetBoard();
     }
 
     /**
@@ -113,7 +113,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        throw new RuntimeException("Not implemented");
+        realBoard = board;
     }
 
     /**
@@ -121,7 +121,5 @@ public class ChessGame {
      *
      * @return the chessboard
      */
-    public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
-    }
+    public ChessBoard getBoard() { return realBoard; }
 }
