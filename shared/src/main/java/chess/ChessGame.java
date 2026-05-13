@@ -155,9 +155,42 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         ChessPosition kingPos = findKing(teamColor, realBoard);
-        Collection<ChessMove> valid = validMoves(kingPos);
-        if (valid.isEmpty() && isInCheckHelper(teamColor, realBoard)) return true;
+//        Collection<ChessMove> valid = validMoves(kingPosition);
+//        if (valid.isEmpty() && isInCheckHelper(teamColor, realBoard)) return true;
+//        return false;
+        if (!isInCheckHelper(teamColor, realBoard)) return false;
+        boolean stillInCheck = true;
+
+        Collection<ChessPosition> teamPieces = findAllTeamPieces(teamColor);
+        for (ChessPosition piecePos : teamPieces) {
+            for (ChessMove move : realBoard.getPiece(piecePos).pieceMoves(realBoard, piecePos)) {
+                if (!checkmateHelper(teamColor, move)) stillInCheck = false;
+            }
+        }
+        return stillInCheck;
+    }
+
+    private boolean checkmateHelper(TeamColor teamColor, ChessMove move) {
+        // simulate the move, if the king is still in check afterwards then return true
+        ChessPosition startPos = move.getStartPosition();
+        ChessBoard cloned = (ChessBoard) realBoard.clone();
+        cloned.addPiece(move.getEndPosition(), realBoard.getPiece(startPos));
+        cloned.addPiece(startPos, null);
+        if (isInCheckHelper(realBoard.getPiece(startPos).getTeamColor(), cloned)) return true;
         return false;
+    }
+
+    private Collection<ChessPosition> findAllTeamPieces(TeamColor teamColor) {
+        Collection<ChessPosition> team = new ArrayList<>();
+        for (int i=0; i<8; i++) {
+            for (int j=0; j<8; j++) {
+                ChessPosition pos = new ChessPosition(i+1,j+1);
+                if (realBoard.getPiece(pos) != null && realBoard.getPiece(pos).getTeamColor() == teamColor) {
+                    team.add(pos);
+                }
+            }
+        }
+        return team;
     }
 
     /**
