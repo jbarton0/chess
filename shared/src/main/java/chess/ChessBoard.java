@@ -80,12 +80,19 @@ public class ChessBoard implements Cloneable{
 
     @Override
     protected Object clone() {
-        ChessPiece [][] cloned = new ChessPiece[8][8];
+        ChessBoard cloned = new ChessBoard();
 
         for (int i=0; i<8; i++) {
-            cloned[i] = Arrays.copyOf(board[i], board[i].length);
+            cloned.board[i] = Arrays.copyOf(board[i], board[i].length);
         }
 
         return cloned;
+    }
+
+    @Override
+    public String toString() {
+        return "ChessBoard{" +
+                Arrays.deepToString(board) +
+                '}';
     }
 }
