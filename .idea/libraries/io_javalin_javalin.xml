@@ -1,5 +1,5 @@
 <component name="libraryTable">
-  <library name="io.javalin" type="repository">
+  <library name="io.javalin:javalin" type="repository">
     <properties maven-id="io.javalin:javalin:6.4.0" />
     <CLASSES>
       <root url="jar://$MAVEN_REPOSITORY$/io/javalin/javalin/6.4.0/javalin-6.4.0.jar!/" />
