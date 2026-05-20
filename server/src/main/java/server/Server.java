@@ -22,8 +22,10 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
+                .post("/session", this::login)
                 .delete("/db", this::clear)
                 .post("/user", this::register);
+
 
         // Register your endpoints and exception handlers here.
 
@@ -46,6 +48,24 @@ public class Server {
         } catch (AlreadyTakenException e) {
             context.result(new Gson().toJson(new Message("Error: username already taken")));
             context.status(403);
+
+        } catch (DataAccessException e) {
+            context.status(500);
+        }
+    }
+
+    private void login(Context context) {
+        UserData user = new Gson().fromJson(context.body(), UserData.class);
+        LoginRequest req = new LoginRequest(user.username(), user.password());
+
+        try {
+            LoginResult res = new UserService().login(req);
+            context.result(new Gson().toJson(res));
+            context.status(200);
+
+        } catch (IncorrectLoginException e) {
+            context.result(new Gson().toJson(new Message("Error: unauthorized")));
+            context.status(401);
 
         } catch (DataAccessException e) {
             context.status(500);

@@ -42,4 +42,11 @@ class ServiceTests {
         });
     }
 
+    @Test
+    void login() throws DataAccessException {
+        //create list method for auth memory
+        //register a user, logout (?) then login
+        //assert their auth token is inside auth memory list
+    }
+
 }

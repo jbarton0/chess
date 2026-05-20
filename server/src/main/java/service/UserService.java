@@ -25,8 +25,13 @@ public class UserService {
         return UUID.randomUUID().toString();
     }
 
-    public LoginResult login(LoginRequest loginRequest) {
-        return new LoginResult("abc,", "123");
+    public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        UserData userData = new UserData(loginRequest.username(), loginRequest.password(), "email");
+        if (!Server.userMemory.findUser(userData)) { throw new IncorrectLoginException("Error: incorrect login");}
+
+        String auth = generateToken();
+        Server.authMemory.createAuth(new AuthData(auth, loginRequest.username()));
+        return new LoginResult(loginRequest.username(), auth);
     }
 
     public void logout(LogoutRequest logoutRequest) {
