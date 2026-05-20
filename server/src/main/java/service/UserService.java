@@ -34,12 +34,20 @@ public class UserService {
         return new LoginResult(loginRequest.username(), auth);
     }
 
-    public void logout(LogoutRequest logoutRequest) {
+    public void logout(LogoutRequest logoutRequest) throws DataAccessException {
+        String authToken = logoutRequest.auth();
+        if (!Server.authMemory.findAuth(authToken)) { throw new NoAuthException("Error: unauthorized"); }
 
+        Server.authMemory.deleteAuth(authToken);
     }
 
     public ArrayList<UserData> list() {
         //for testing purposes
         return Server.userMemory.listUsers();
+    }
+
+    public ArrayList<AuthData> listAuth() {
+        //for testing purposes
+        return Server.authMemory.list();
     }
 }

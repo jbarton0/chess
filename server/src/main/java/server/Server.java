@@ -22,6 +22,7 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
+                .delete("/session", this::logout)
                 .post("/session", this::login)
                 .delete("/db", this::clear)
                 .post("/user", this::register);
@@ -64,6 +65,23 @@ public class Server {
             context.status(200);
 
         } catch (IncorrectLoginException e) {
+            context.result(new Gson().toJson(new Message("Error: unauthorized")));
+            context.status(401);
+
+        } catch (DataAccessException e) {
+            context.status(500);
+        }
+    }
+
+    private void logout(Context context) {
+        String authToken = new Gson(). fromJson(context.body(), String.class);
+        LogoutRequest request = new LogoutRequest(authToken);
+
+        try {
+            new UserService().logout(request);
+            context.status(200);
+
+        } catch (NoAuthException e) {
             context.result(new Gson().toJson(new Message("Error: unauthorized")));
             context.status(401);
 
