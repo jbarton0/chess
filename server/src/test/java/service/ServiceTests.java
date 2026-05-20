@@ -79,4 +79,9 @@ class ServiceTests {
         });
     }
 
+    @Test
+    void list() throws DataAccessException {
+        //add a game, then list games, then assert that the returned object contains the game
+    }
+
 }

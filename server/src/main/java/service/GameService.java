@@ -1,9 +1,12 @@
 package service;
 
-import model.GameData;
+import dataAccess.DataAccessException;
+import model.*;
+import server.Server;
 import service.Request.*;
 import service.Result.*;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class GameService {
     public CreateResult create(CreateRequest createRequest) {
@@ -14,7 +17,10 @@ public class GameService {
 
     }
 
-    public ListResult listGames(ListRequest listRequest) {
-        return new ListResult(new ArrayList<GameData>());
+    public ListResult listGames(ListRequest listRequest) throws DataAccessException {
+        AuthData authData = new AuthData(listRequest.auth(), "username");
+        if (!Server.authMemory.findAuth(listRequest.auth())) throw new NoAuthException("Error: unauthorized");
+
+        return new ListResult(Server.gameMemory.list());
     }
 }

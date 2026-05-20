@@ -22,12 +22,11 @@ public class Server {
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
-                .delete("/session", this::logout)
-                .post("/session", this::login)
                 .delete("/db", this::clear)
-                .post("/user", this::register);
-
-
+                .post("/user", this::register)
+                .post("/session", this::login)
+                .delete("/session", this::logout)
+                .get("/game", this::listGames);
         // Register your endpoints and exception handlers here.
 
     }
@@ -74,11 +73,29 @@ public class Server {
     }
 
     private void logout(Context context) {
-        String authToken = new Gson(). fromJson(context.body(), String.class);
+        String authToken = new Gson().fromJson(context.body(), String.class);
         LogoutRequest request = new LogoutRequest(authToken);
 
         try {
             new UserService().logout(request);
+            context.status(200);
+
+        } catch (NoAuthException e) {
+            context.result(new Gson().toJson(new Message("Error: unauthorized")));
+            context.status(401);
+
+        } catch (DataAccessException e) {
+            context.status(500);
+        }
+    }
+
+    private void listGames(Context context) {
+        String authToken = new Gson().fromJson(context.body(), String.class);
+        ListRequest request = new ListRequest(authToken);
+
+        try {
+            ListResult result = new GameService().listGames(request);
+            context.result(new Gson().toJson(result));
             context.status(200);
 
         } catch (NoAuthException e) {
