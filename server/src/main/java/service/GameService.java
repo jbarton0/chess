@@ -1,16 +1,20 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import model.*;
 import server.Server;
 import service.Request.*;
 import service.Result.*;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Random;
 
 public class GameService {
-    public CreateResult create(CreateRequest createRequest) {
-        return new CreateResult(1234);
+    public CreateResult create(CreateRequest createRequest) throws DataAccessException {
+        if (!Server.authMemory.findAuth(createRequest.auth())) throw new NoAuthException("Error: not authorized");
+
+        GameData gameData = new GameData(new Random().nextInt(100), null, null, createRequest.gameName(), new ChessGame());
+        int gameID = Server.gameMemory.create(gameData);
+        return new CreateResult(gameID);
     }
 
     public void join(JoinRequest joinRequest) {

@@ -26,7 +26,8 @@ public class Server {
                 .post("/user", this::register)
                 .post("/session", this::login)
                 .delete("/session", this::logout)
-                .get("/game", this::listGames);
+                .get("/game", this::listGames)
+                .post("/game", this::createGame);
         // Register your endpoints and exception handlers here.
 
     }
@@ -95,6 +96,23 @@ public class Server {
 
         try {
             ListResult result = new GameService().listGames(request);
+            context.result(new Gson().toJson(result));
+            context.status(200);
+
+        } catch (NoAuthException e) {
+            context.result(new Gson().toJson(new Message("Error: unauthorized")));
+            context.status(401);
+
+        } catch (DataAccessException e) {
+            context.status(500);
+        }
+    }
+
+    private void createGame(Context context) {
+        CreateRequest request = new Gson().fromJson(context.body(), CreateRequest.class);
+
+        try {
+            CreateResult result = new GameService().create(request);
             context.result(new Gson().toJson(result));
             context.status(200);
 

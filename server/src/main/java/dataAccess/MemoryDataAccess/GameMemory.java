@@ -16,4 +16,9 @@ public class GameMemory implements GameDAO {
     public Collection<GameData> list() throws DataAccessException {
         return games;
     }
+
+    public int create(GameData gameData) {
+        games.add(gameData);
+        return gameData.gameID();
+    }
 }

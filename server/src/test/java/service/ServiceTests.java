@@ -5,9 +5,7 @@ import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.Request.LoginRequest;
-import service.Request.LogoutRequest;
-import service.Request.RegisterRequest;
+import service.Request.*;
 import service.Result.*;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,6 +14,7 @@ class ServiceTests {
 
     public UserService userService = new UserService();
     public ClearService clearService = new ClearService();
+    public GameService gameService = new GameService();
 
     @BeforeEach
     void clear() throws DataAccessException {
@@ -81,7 +80,28 @@ class ServiceTests {
 
     @Test
     void list() throws DataAccessException {
-        //add a game, then list games, then assert that the returned object contains the game
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+
+        gameService.create(new CreateRequest(register.auth(), "gameName"));
+        ListResult listResult = gameService.listGames(new ListRequest(register.auth()));
+        assertTrue(listResult.games().stream().anyMatch(GameData -> GameData.gameName().equals("gameName")));
+
+        assertThrows(NoAuthException.class, () -> {
+            gameService.create(new CreateRequest("auth", "gameName"));
+        });
+    }
+
+    @Test
+    void create() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+
+        gameService.create(new CreateRequest(register.auth(), "gameName"));
+        ListResult listResult = gameService.listGames(new ListRequest(register.auth()));
+        assertTrue(listResult.games().stream().anyMatch(GameData -> GameData.gameName().equals("gameName")));
+
+        assertThrows(NoAuthException.class, () -> {
+            gameService.create(new CreateRequest("auth", "gameName"));
+        });
     }
 
 }
