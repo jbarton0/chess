@@ -2,10 +2,14 @@ package server;
 
 import com.google.gson.Gson;
 import dataAccess.DataAccessException;
+import dataAccess.MemoryDataAccess.Message;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
 import service.*;
+import service.Request.*;
+import service.Result.*;
+import service.UserService.*;
 
 public class Server {
 
@@ -27,7 +31,20 @@ public class Server {
 
     private void register(Context context) {
         UserData user = new Gson().fromJson(context.body(), UserData.class);
-        // get register request??
+        RegisterRequest req = new RegisterRequest(user.username(), user.password(), user.email());
+
+        try {
+            RegisterResult res = new UserService().register(req);
+            context.result(new Gson().toJson(res));
+            context.status(200);
+
+        } catch (AlreadyTakenException e) {
+            context.result(new Gson().toJson(new Message("Error: username already taken")));
+            context.status(403);
+
+        } catch (DataAccessException e) {
+            context.status(500);
+        }
     }
 
     public int run(int desiredPort) {
