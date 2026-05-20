@@ -5,15 +5,21 @@ import dataAccess.MemoryDataAccess.*;
 import model.*;
 import service.Request.*;
 import service.Result.*;
+
+import java.util.ArrayList;
 import java.util.UUID;
 
 public class UserService {
-    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
-        if (new UserMemory().getUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()))) { throw new AlreadyTakenException("Error: username already taken");}
+    public UserMemory userDao = new UserMemory();
+    public AuthMemory authDao = new AuthMemory();
 
-        new UserMemory().createUser(new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email()));
+    public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+        UserData u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
+        if (userDao.getUser(u)) { throw new AlreadyTakenException("Error: username already taken");}
+
+        userDao.createUser(u);
         String auth = generateToken();
-        new AuthMemory().createAuth(new AuthData(auth, registerRequest.username()));
+        authDao.createAuth(new AuthData(auth, registerRequest.username()));
         return new RegisterResult(registerRequest.username(), auth);
     }
 
@@ -27,5 +33,10 @@ public class UserService {
 
     public void logout(LogoutRequest logoutRequest) {
 
+    }
+
+    public ArrayList<UserData> list() {
+        //for testing purposes
+        return userDao.listUsers();
     }
 }
