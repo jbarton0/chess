@@ -10,10 +10,15 @@ import service.*;
 import service.Request.*;
 import service.Result.*;
 import service.UserService.*;
+import dataAccess.MemoryDataAccess.*;
 
 public class Server {
 
     private final Javalin javalin;
+    public final static UserMemory userMemory = new UserMemory();
+    public final static AuthMemory authMemory = new AuthMemory();
+    public final static GameMemory gameMemory = new GameMemory();
+
 
     public Server() {
         javalin = Javalin.create(config -> config.staticFiles.add("web"))

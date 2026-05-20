@@ -11,24 +11,34 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceTests {
 
+    public UserService userService = new UserService();
+    public ClearService clearService = new ClearService();
+
     @BeforeEach
     void clear() throws DataAccessException {
-        new ClearService().clearAll();
+        clearService.clearAll();
+    }
+
+    @Test
+    void clearAll() throws DataAccessException {
+        RegisterResult r = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+        clearService.clearAll();
+        ArrayList<UserData> users = userService.list();
+        assertTrue(users.isEmpty());
     }
 
     @Test
     void register() throws DataAccessException {
         RegisterRequest userData = new RegisterRequest("Bob", "b123", "b@email");
         UserData u = new UserData(userData.username(), userData.password(), userData.email());
-        UserService service = new UserService();
-        RegisterResult register = service.register(userData);
+        RegisterResult register = userService.register(userData);
 
-        ArrayList<UserData> users = service.list();
+        ArrayList<UserData> users = userService.list();
         assertTrue(users.contains(u));
         UserData ud = new UserData("Bob", "b123", "b@email");
 
         assertThrows(AlreadyTakenException.class, () -> {
-            RegisterResult r = service.register(new RegisterRequest("Bob", "b123", "b@email"));
+            RegisterResult r = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
         });
     }
 

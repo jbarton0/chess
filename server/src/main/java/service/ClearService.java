@@ -2,6 +2,8 @@ package service;
 
 import dataAccess.DataAccessException;
 import dataAccess.MemoryDataAccess.*;
+import server.Server;
+import service.UserService.*;
 
 public class ClearService {
     public void clearAll() throws DataAccessException {
@@ -11,7 +13,7 @@ public class ClearService {
     }
 
     private void clearAllUsers() throws DataAccessException {
-        new UserMemory().clearUsers();
+        Server.userMemory.clearUsers();
     }
 
     private void clearAllAuth() throws DataAccessException {
