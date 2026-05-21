@@ -1,9 +1,9 @@
-package DataAccess.MemoryDataAccess;
+package dataaaccess.memorydataaccess;
 
 import chess.ChessGame;
-import DataAccess.DataAccessException;
+import dataaaccess.DataAccessException;
 import model.*;
-import DataAccess.GameDAO;
+import dataaaccess.GameDAO;
 import server.Server;
 import service.request.JoinRequest;
 

@@ -159,7 +159,9 @@ class BishopMovesCalculator implements PieceMovesCalculator {
                 moves.add(new ChessMove(myPosition, pos, null));
                 return false;
             }
-            else return false;
+            else {
+                return false;
+            }
         }
         return true;
     }
@@ -252,10 +254,10 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         return moves;
     }
 
-    private void check(ChessBoard board, Collection<ChessMove> moves, ChessPosition myPosition, int col, int oneFront, int frontLeft, int frontRight) {
-        if (oneFront>0 && oneFront<=8) {
-            ChessPosition pos = new ChessPosition(oneFront, col);
-            if (board.getPiece(pos) == null && oneFront==1 || oneFront==8) {
+    private void check(ChessBoard board, Collection<ChessMove> moves, ChessPosition myPosition, int col, int front, int frontLeft, int frontRight) {
+        if (front>0 && front<=8) {
+            ChessPosition pos = new ChessPosition(front, col);
+            if (board.getPiece(pos) == null && front==1 || front==8) {
                 addPromotions(myPosition, pos, moves);
             }
             else if (board.getPiece(pos) == null) {
@@ -263,9 +265,9 @@ class PawnMovesCalculator implements PieceMovesCalculator {
             }
 
             if (frontLeft>0 && frontLeft<=8) {
-                ChessPosition pos2 = new ChessPosition(oneFront, frontLeft);
+                ChessPosition pos2 = new ChessPosition(front, frontLeft);
                 if (board.getPiece(pos2) != null) {
-                    if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor() && oneFront == 1 || oneFront == 8) {
+                    if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor() && front == 1 || front == 8) {
                         addPromotions(myPosition, pos2, moves);
                     }
                     else if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
@@ -274,9 +276,9 @@ class PawnMovesCalculator implements PieceMovesCalculator {
                 }
             }
             if (frontRight>0 && frontRight<=8) {
-                ChessPosition pos3 = new ChessPosition(oneFront, frontRight);
+                ChessPosition pos3 = new ChessPosition(front, frontRight);
                 if (board.getPiece(pos3)!=null) {
-                    if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor() && oneFront == 1 || oneFront == 8) {
+                    if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor() && front == 1 || front == 8) {
                         addPromotions(myPosition, pos3, moves);
                     }
                     else if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {

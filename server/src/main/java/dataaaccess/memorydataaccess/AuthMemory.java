@@ -1,8 +1,8 @@
-package DataAccess.MemoryDataAccess;
+package dataaaccess.memorydataaccess;
 
-import DataAccess.DataAccessException;
+import dataaaccess.DataAccessException;
 import model.AuthData;
-import DataAccess.AuthDAO;
+import dataaaccess.AuthDAO;
 import java.util.ArrayList;
 
 public class AuthMemory implements AuthDAO {

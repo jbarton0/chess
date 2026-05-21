@@ -146,7 +146,8 @@ public class ChessGame {
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
                 ChessPosition pos = new ChessPosition(i+1,j+1);
-                if (board.getPiece(pos) != null && board.getPiece(pos).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(pos).getTeamColor() == teamColor) {
+                boolean bool = board.getPiece(pos).getTeamColor() == teamColor;
+                if (board.getPiece(pos) != null && board.getPiece(pos).getPieceType() == ChessPiece.PieceType.KING && bool) {
                     return pos;
                 }
             }
@@ -232,7 +233,8 @@ public class ChessGame {
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
                 ChessPosition pos = new ChessPosition(i+1,j+1);
-                if (realBoard.getPiece(pos) != null && realBoard.getPiece(pos).getPieceType() != ChessPiece.PieceType.KING && realBoard.getPiece(pos).getTeamColor() == teamColor) {
+                boolean bool = realBoard.getPiece(pos).getPieceType() != ChessPiece.PieceType.KING;
+                if (realBoard.getPiece(pos) != null && bool && realBoard.getPiece(pos).getTeamColor() == teamColor) {
                     team.add(pos);
                 }
             }

@@ -1,6 +1,6 @@
 package service;
 
-import DataAccess.DataAccessException;
+import dataaaccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;

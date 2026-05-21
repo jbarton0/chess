@@ -1,15 +1,17 @@
 package server;
 
 import com.google.gson.Gson;
-import DataAccess.DataAccessException;
-import DataAccess.MemoryDataAccess.Message;
+import dataaaccess.DataAccessException;
+import dataaaccess.memorydataaccess.AuthMemory;
+import dataaaccess.memorydataaccess.GameMemory;
+import dataaaccess.memorydataaccess.Message;
+import dataaaccess.memorydataaccess.UserMemory;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
 import service.*;
 import service.request.*;
 import service.result.*;
-import DataAccess.MemoryDataAccess.*;
 
 public class Server {
 
