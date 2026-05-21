@@ -1,10 +1,10 @@
 package service;
 
 import dataaaccess.DataAccessException;
-import model.AuthData;
-import model.UserData;
+import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import server.Server;
 import service.request.*;
 import service.result.*;
 
@@ -101,7 +101,7 @@ class ServiceTests {
         gameService.create(new CreateRequest(register.authToken(), "game2"));
         gameService.create(new CreateRequest(register.authToken(), "game3"));
         ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
-        assertTrue(listResult.games().size() == 3);
+        assertEquals(3, listResult.games().size());
         assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
 
         assertThrows(NoAuthException.class, () -> {
@@ -115,6 +115,8 @@ class ServiceTests {
 
         CreateResult result = gameService.create(new CreateRequest(register.authToken(), "gameName"));
         gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
+        GameData gameData = Server.GAME_MEMORY.getGame(result.gameID());
+        assertNotNull(gameData.whiteUsername());
 
         assertThrows(AlreadyTakenException.class, () -> {
             gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
