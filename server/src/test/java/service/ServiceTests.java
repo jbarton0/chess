@@ -38,7 +38,11 @@ class ServiceTests {
 
         ArrayList<UserData> users = userService.list();
         assertTrue(users.contains(u));
-        UserData ud = new UserData("Bob", "b123", "b@email");
+    }
+
+    @Test
+    void registerNegative() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
         assertThrows(AlreadyTakenException.class, () -> {
             RegisterResult r = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
@@ -57,6 +61,11 @@ class ServiceTests {
 
         LoginResult loginResult = userService.login(new LoginRequest(register.username(), "b123"));
         assertTrue(authTokens.contains(new AuthData(loginResult.authToken(), loginResult.username())));
+    }
+
+    @Test
+    void loginNegative() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
         assertThrows(IncorrectLoginException.class, () -> {
             LoginResult result = userService.login(new LoginRequest("Joe", "joeMomma"));
@@ -73,7 +82,10 @@ class ServiceTests {
 
         userService.logout(new LogoutRequest(register.authToken()));
         assertFalse(authTokens.contains(data));
+    }
 
+    @Test
+    void logoutNegative() throws DataAccessException {
         assertThrows(NoAuthException.class, () -> {
             userService.logout(new LogoutRequest("abc"));
         });
@@ -87,7 +99,10 @@ class ServiceTests {
         gameService.create(new CreateRequest(register.authToken(), "gameName"));
         ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
         assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
+    }
 
+    @Test
+    void listNegative() throws DataAccessException {
         assertThrows(NoAuthException.class, () -> {
             gameService.create(new CreateRequest("authToken", "gameName"));
         });
@@ -103,7 +118,10 @@ class ServiceTests {
         ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
         assertEquals(3, listResult.games().size());
         assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
+    }
 
+    @Test
+    void createNegative() throws DataAccessException {
         assertThrows(NoAuthException.class, () -> {
             gameService.create(new CreateRequest("authToken", "gameName"));
         });
@@ -117,6 +135,13 @@ class ServiceTests {
         gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
         GameData gameData = Server.GAME_MEMORY.getGame(result.gameID());
         assertNotNull(gameData.whiteUsername());
+    }
+
+    @Test
+    void joinNegative() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+        CreateResult result = gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
 
         assertThrows(AlreadyTakenException.class, () -> {
             gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
