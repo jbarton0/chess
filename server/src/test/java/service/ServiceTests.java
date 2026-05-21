@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import server.Server;
 import service.request.*;
 import service.result.*;
-
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
