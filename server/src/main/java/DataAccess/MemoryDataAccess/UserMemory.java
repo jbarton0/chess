@@ -1,10 +1,9 @@
-package dataAccess.MemoryDataAccess;
+package DataAccess.MemoryDataAccess;
 
-import dataAccess.DataAccessException;
-import dataAccess.UserDAO;
+import DataAccess.DataAccessException;
+import DataAccess.UserDAO;
 import java.util.ArrayList;
 import model.UserData;
-import service.Request.*;
 
 
 public class UserMemory implements UserDAO {
@@ -16,12 +15,12 @@ public class UserMemory implements UserDAO {
 
     public boolean getUser(UserData u) throws DataAccessException {
         //finds user by username
-        return users.stream().anyMatch(UserData -> UserData.username().equals(u.username()));
+        return users.stream().anyMatch(userData -> userData.username().equals(u.username()));
     }
 
     public boolean findUser(UserData u) {
         //finds user by username && password
-        return users.stream().anyMatch(UserData -> UserData.username().equals(u.username()) && UserData.password().equals(u.password()));
+        return users.stream().anyMatch(userData -> userData.username().equals(u.username()) && userData.password().equals(u.password()));
     }
 
     public void createUser(UserData userData) throws DataAccessException {

@@ -1,12 +1,12 @@
 package service;
 
-import dataAccess.DataAccessException;
+import DataAccess.DataAccessException;
 import model.AuthData;
 import model.UserData;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.Request.*;
-import service.Result.*;
+import service.request.*;
+import service.result.*;
 
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
@@ -82,10 +82,11 @@ class ServiceTests {
     @Test
     void list() throws DataAccessException {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+        assertTrue(gameService.listGames(new ListRequest(register.authToken())).games().isEmpty());
 
         gameService.create(new CreateRequest(register.authToken(), "gameName"));
         ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
-        assertTrue(listResult.games().stream().anyMatch(GameData -> GameData.gameName().equals("gameName")));
+        assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
 
         assertThrows(NoAuthException.class, () -> {
             gameService.create(new CreateRequest("authToken", "gameName"));
@@ -97,8 +98,11 @@ class ServiceTests {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
         gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        gameService.create(new CreateRequest(register.authToken(), "game2"));
+        gameService.create(new CreateRequest(register.authToken(), "game3"));
         ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
-        assertTrue(listResult.games().stream().anyMatch(GameData -> GameData.gameName().equals("gameName")));
+        assertTrue(listResult.games().size() == 3);
+        assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
 
         assertThrows(NoAuthException.class, () -> {
             gameService.create(new CreateRequest("authToken", "gameName"));

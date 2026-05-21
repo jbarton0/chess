@@ -59,17 +59,16 @@ public class ChessGame {
                 valid.add(move);
             }
         }
-//        if (valid.isEmpty()) return null;
         return valid;
     }
 
     private boolean isMoveValid(ChessMove move, ChessPosition startPos, Collection<ChessMove> possibleMoves) {
-        //clones board, makes move, returns false if that move allows for check
-        //returns true if move is valid
         ChessBoard cloned = (ChessBoard) realBoard.clone();
         cloned.addPiece(move.getEndPosition(), realBoard.getPiece(startPos));
         cloned.addPiece(startPos, null);
-        if (!possibleMoves.contains(move) | isInCheckHelper(realBoard.getPiece(startPos).getTeamColor(), cloned)) return false;
+        if (!possibleMoves.contains(move) | isInCheckHelper(realBoard.getPiece(startPos).getTeamColor(), cloned)) {
+            return false;
+        }
         return true;
     }
 
@@ -80,12 +79,14 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        // update the state of the board
-        // move a piece from one place to another and deal with any things like pawn promotion
         ChessPosition pos = move.getStartPosition();
         ChessPiece piece = realBoard.getPiece(pos);
-        if (realBoard.getPiece(pos) == null) throw new InvalidMoveException("No piece in that position");
-        if ( piece.getTeamColor() != turn | !isMoveValid(move, pos, realBoard.getPiece(pos).pieceMoves(realBoard, pos))) throw new InvalidMoveException("Invalid move");
+        if (realBoard.getPiece(pos) == null) {
+            throw new InvalidMoveException("No piece in that position");
+        }
+        if ( piece.getTeamColor() != turn | !isMoveValid(move, pos, realBoard.getPiece(pos).pieceMoves(realBoard, pos))) {
+            throw new InvalidMoveException("Invalid move");
+        }
         else if (move.getPromotionPiece() != null) {
             realBoard.addPiece(move.getEndPosition(), new ChessPiece(piece.getTeamColor(), move.getPromotionPiece()));
             realBoard.addPiece(pos, null);
@@ -105,8 +106,6 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        // iterate through board and look for all other team's pieces
-        // check piece moves for all pieces of other team on the board and see if they can attack king
         return isInCheckHelper(teamColor, realBoard);
     }
 
@@ -114,7 +113,9 @@ public class ChessGame {
         ChessPosition kingPos = findKing(teamColor, board);
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {
-                if (checkForCheck(i, j, teamColor, kingPos, board)) return true;
+                if (checkForCheck(i, j, teamColor, kingPos, board)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -122,14 +123,20 @@ public class ChessGame {
 
     private boolean checkForCheck(int i, int j, TeamColor teamColor, ChessPosition kingPos, ChessBoard board) {
         ChessPosition pos = new ChessPosition(i+1,j+1);
-        if (board.getPiece(pos) == null) return false;
+        if (board.getPiece(pos) == null) {
+            return false;
+        }
 
         if (board.getPiece(pos).getTeamColor() != teamColor) {
             Collection<ChessMove> possibleMoves = board.getPiece(pos).pieceMoves(board, pos);
-            if (possibleMoves == null) return false;
+            if (possibleMoves == null) {
+                return false;
+            }
 
             for (ChessMove move : possibleMoves) {
-                if (move.getEndPosition().equals(kingPos)) return true;
+                if (move.getEndPosition().equals(kingPos)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -155,28 +162,30 @@ public class ChessGame {
      */
     public boolean isInCheckmate(TeamColor teamColor) {
         ChessPosition kingPos = findKing(teamColor, realBoard);
-//        Collection<ChessMove> valid = validMoves(kingPosition);
-//        if (valid.isEmpty() && isInCheckHelper(teamColor, realBoard)) return true;
-//        return false;
-        if (!isInCheckHelper(teamColor, realBoard)) return false;
+        if (!isInCheckHelper(teamColor, realBoard)) {
+            return false;
+        }
         boolean stillInCheck = true;
 
         Collection<ChessPosition> teamPieces = findAllTeamPieces(teamColor);
         for (ChessPosition piecePos : teamPieces) {
             for (ChessMove move : realBoard.getPiece(piecePos).pieceMoves(realBoard, piecePos)) {
-                if (!checkmateHelper(teamColor, move)) stillInCheck = false;
+                if (!checkmateHelper(teamColor, move)) {
+                    stillInCheck = false;
+                }
             }
         }
         return stillInCheck;
     }
 
     private boolean checkmateHelper(TeamColor teamColor, ChessMove move) {
-        // simulate the move, if the king is still in check afterwards then return true
         ChessPosition startPos = move.getStartPosition();
         ChessBoard cloned = (ChessBoard) realBoard.clone();
         cloned.addPiece(move.getEndPosition(), realBoard.getPiece(startPos));
         cloned.addPiece(startPos, null);
-        if (isInCheckHelper(realBoard.getPiece(startPos).getTeamColor(), cloned)) return true;
+        if (isInCheckHelper(realBoard.getPiece(startPos).getTeamColor(), cloned)) {
+            return true;
+        }
         return false;
     }
 
@@ -207,10 +216,14 @@ public class ChessGame {
         boolean noValidMoves = true;
 
         for (ChessPosition teamMate : findTeamPieces(teamColor)) {
-            if (!validMoves(teamMate).isEmpty()) noValidMoves = false;
+            if (!validMoves(teamMate).isEmpty()) {
+                noValidMoves = false;
+            }
         }
 
-        if (valid.isEmpty() && !possible.isEmpty() && noValidMoves && !isInCheckHelper(teamColor, realBoard)) return true;
+        if (valid.isEmpty() && !possible.isEmpty() && noValidMoves && !isInCheckHelper(teamColor, realBoard)) {
+            return true;
+        }
         return false;
     }
 

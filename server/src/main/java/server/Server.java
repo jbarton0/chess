@@ -1,22 +1,22 @@
 package server;
 
 import com.google.gson.Gson;
-import dataAccess.DataAccessException;
-import dataAccess.MemoryDataAccess.Message;
+import DataAccess.DataAccessException;
+import DataAccess.MemoryDataAccess.Message;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
 import service.*;
-import service.Request.*;
-import service.Result.*;
-import dataAccess.MemoryDataAccess.*;
+import service.request.*;
+import service.result.*;
+import DataAccess.MemoryDataAccess.*;
 
 public class Server {
 
     private final Javalin javalin;
-    public final static UserMemory userMemory = new UserMemory();
-    public final static AuthMemory authMemory = new AuthMemory();
-    public final static GameMemory gameMemory = new GameMemory();
+    public final static UserMemory USER_MEMORY = new UserMemory();
+    public final static AuthMemory AUTH_MEMORY = new AuthMemory();
+    public final static GameMemory GAME_MEMORY = new GameMemory();
 
 
     public Server() {

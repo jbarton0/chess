@@ -1,3 +1,3 @@
-package service.Request;
+package service.request;
 
 public record LogoutRequest(String auth) {}

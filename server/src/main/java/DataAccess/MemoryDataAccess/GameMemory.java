@@ -1,11 +1,11 @@
-package dataAccess.MemoryDataAccess;
+package DataAccess.MemoryDataAccess;
 
 import chess.ChessGame;
-import dataAccess.DataAccessException;
+import DataAccess.DataAccessException;
 import model.*;
-import dataAccess.GameDAO;
+import DataAccess.GameDAO;
 import server.Server;
-import service.Request.JoinRequest;
+import service.request.JoinRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,17 +26,17 @@ public class GameMemory implements GameDAO {
         return gameData.gameID();
     }
 
-    public boolean findGame(int ID) {
-        return games.stream().anyMatch(GameData -> GameData.gameID() == ID);
+    public boolean findGame(int id) {
+        return games.stream().anyMatch(gameData -> gameData.gameID() == id);
     }
 
-    public GameData getGame(int ID) {
-        return games.stream().filter(GameData -> GameData.gameID() == ID).findFirst().orElse(null);
+    public GameData getGame(int id) {
+        return games.stream().filter(gameData -> gameData.gameID() == id).findFirst().orElse(null);
     }
 
     public void join(GameData gameData, JoinRequest joinRequest) throws DataAccessException {
         games.remove(gameData);
-        AuthData auth = Server.authMemory.getAuth(joinRequest.auth());
+        AuthData auth = Server.AUTH_MEMORY.getAuth(joinRequest.auth());
         if (joinRequest.playerColor().equals("WHITE")) {
             GameData updated = new GameData(gameData.gameID(), auth.username(), gameData.blackUsername(), gameData.gameName(), new ChessGame());
             games.add(updated);

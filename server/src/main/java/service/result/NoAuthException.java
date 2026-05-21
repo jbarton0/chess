@@ -1,4 +1,4 @@
-package service.Result;
+package service.result;
 
 public class NoAuthException extends RuntimeException {
     public NoAuthException(String message) {

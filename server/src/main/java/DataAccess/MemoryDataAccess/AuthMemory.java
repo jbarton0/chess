@@ -1,8 +1,8 @@
-package dataAccess.MemoryDataAccess;
+package DataAccess.MemoryDataAccess;
 
-import dataAccess.DataAccessException;
+import DataAccess.DataAccessException;
 import model.AuthData;
-import dataAccess.AuthDAO;
+import DataAccess.AuthDAO;
 import java.util.ArrayList;
 
 public class AuthMemory implements AuthDAO {
@@ -17,11 +17,11 @@ public class AuthMemory implements AuthDAO {
     }
 
     public boolean findAuth(String auth) throws DataAccessException {
-        return authTokens.stream().anyMatch(AuthData -> AuthData.authToken().equals(auth));
+        return authTokens.stream().anyMatch(authData -> authData.authToken().equals(auth));
     }
 
     public AuthData getAuth(String authToken) throws DataAccessException {
-        return authTokens.stream().filter(AuthData -> AuthData.authToken().equals(authToken)).findFirst().orElse(null);
+        return authTokens.stream().filter(authData -> authData.authToken().equals(authToken)).findFirst().orElse(null);
     }
 
     public void deleteAuth(String auth) throws DataAccessException {

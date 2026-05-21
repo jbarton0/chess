@@ -27,8 +27,9 @@ class KingMovesCalculator implements PieceMovesCalculator {
 
         for (int i = col-1; i < col+2; i++) {
             for (int j = row-1; j < row+2; j++) {
-                if (row == j && col == i) continue;
-
+                if (row == j && col == i) {
+                    continue;
+                }
                 if (i < 8 && i >= 0 && j >= 0 && j < 8) {
                     ChessPosition pos = new ChessPosition(j+1, i+1);
                     if (board.getPiece(pos) == null || board.getPiece(pos).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
@@ -173,7 +174,9 @@ class RookMovesCalculator implements PieceMovesCalculator {
         //check up
         boolean notBlocked = true;
         for (int i=row; notBlocked && i>0 && i<=8; i++) {
-            if (i==row) continue;
+            if (i==row) {
+                continue;
+            }
             ChessPosition pos = new ChessPosition(i, col);
             notBlocked = check(board, moves, myPosition, pos);
         }
@@ -181,7 +184,9 @@ class RookMovesCalculator implements PieceMovesCalculator {
         //check down
         notBlocked = true;
         for (int i=row; notBlocked && i>0 && i<=8; i--) {
-            if (i==row) continue;
+            if (i==row) {
+                continue;
+            }
             ChessPosition pos = new ChessPosition(i, col);
             notBlocked = check(board, moves, myPosition, pos);
         }
@@ -189,7 +194,9 @@ class RookMovesCalculator implements PieceMovesCalculator {
         //check right
         notBlocked = true;
         for (int i=col; notBlocked && i>0 && i<=8; i++) {
-            if (i==col) continue;
+            if (i==col) {
+                continue;
+            }
             ChessPosition pos = new ChessPosition(row, i);
             notBlocked = check(board, moves, myPosition, pos);
         }
@@ -197,7 +204,9 @@ class RookMovesCalculator implements PieceMovesCalculator {
         //check left
         notBlocked = true;
         for (int i=col; notBlocked && i>0 && i<=8; i--) {
-            if (i==col) continue;
+            if (i==col) {
+                continue;
+            }
             ChessPosition pos = new ChessPosition(row, i);
             notBlocked = check(board, moves, myPosition, pos);
         }
@@ -206,8 +215,12 @@ class RookMovesCalculator implements PieceMovesCalculator {
     }
 
     private boolean check(ChessBoard board, Collection<ChessMove> moves, ChessPosition myPosition, ChessPosition pos) {
-        if (board.getPiece(pos) == null) moves.add(new ChessMove(myPosition, pos, null));
-        else if (board.getPiece(pos).getTeamColor() == board.getPiece(myPosition).getTeamColor()) return false;
+        if (board.getPiece(pos) == null) {
+            moves.add(new ChessMove(myPosition, pos, null));
+        }
+        else if (board.getPiece(pos).getTeamColor() == board.getPiece(myPosition).getTeamColor()) {
+            return false;
+        }
         else {
             moves.add(new ChessMove(myPosition, pos, null));
             return false;
@@ -225,12 +238,16 @@ class PawnMovesCalculator implements PieceMovesCalculator {
         if (board.getPiece(myPosition).getTeamColor() == ChessGame.TeamColor.WHITE) {
             check(board, moves, myPosition, col, row+1, col-1, col+1);
             ChessPosition pos = new ChessPosition(4, col);
-            if (row==2 && board.getPiece(pos)==null && board.getPiece(new ChessPosition(3, col))==null) moves.add(new ChessMove(myPosition, pos, null));
+            if (row==2 && board.getPiece(pos)==null && board.getPiece(new ChessPosition(3, col))==null) {
+                moves.add(new ChessMove(myPosition, pos, null));
+            }
         }
         else {
             check(board, moves, myPosition, col, row-1, col+1, col-1);
             ChessPosition pos = new ChessPosition(5, col);
-            if (row==7 && board.getPiece(pos)==null && board.getPiece(new ChessPosition(6, col))==null) moves.add(new ChessMove(myPosition, pos, null));
+            if (row==7 && board.getPiece(pos)==null && board.getPiece(new ChessPosition(6, col))==null) {
+                moves.add(new ChessMove(myPosition, pos, null));
+            }
         }
         return moves;
     }
@@ -238,25 +255,33 @@ class PawnMovesCalculator implements PieceMovesCalculator {
     private void check(ChessBoard board, Collection<ChessMove> moves, ChessPosition myPosition, int col, int oneFront, int frontLeft, int frontRight) {
         if (oneFront>0 && oneFront<=8) {
             ChessPosition pos = new ChessPosition(oneFront, col);
-            if (board.getPiece(pos) == null && oneFront==1 || oneFront==8) addPromotions(myPosition, pos, moves);
-            else if (board.getPiece(pos) == null) moves.add(new ChessMove(myPosition, pos, null));
+            if (board.getPiece(pos) == null && oneFront==1 || oneFront==8) {
+                addPromotions(myPosition, pos, moves);
+            }
+            else if (board.getPiece(pos) == null) {
+                moves.add(new ChessMove(myPosition, pos, null));
+            }
 
             if (frontLeft>0 && frontLeft<=8) {
                 ChessPosition pos2 = new ChessPosition(oneFront, frontLeft);
                 if (board.getPiece(pos2) != null) {
-                    if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor() && oneFront == 1 || oneFront == 8)
+                    if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor() && oneFront == 1 || oneFront == 8) {
                         addPromotions(myPosition, pos2, moves);
-                    else if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+                    }
+                    else if (board.getPiece(pos2).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                         moves.add(new ChessMove(myPosition, pos2, null));
+                    }
                 }
             }
             if (frontRight>0 && frontRight<=8) {
                 ChessPosition pos3 = new ChessPosition(oneFront, frontRight);
                 if (board.getPiece(pos3)!=null) {
-                    if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor() && oneFront == 1 || oneFront == 8)
+                    if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor() && oneFront == 1 || oneFront == 8) {
                         addPromotions(myPosition, pos3, moves);
-                    else if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor())
+                    }
+                    else if (board.getPiece(pos3).getTeamColor() != board.getPiece(myPosition).getTeamColor()) {
                         moves.add(new ChessMove(myPosition, pos3, null));
+                    }
                 }
             }
         }

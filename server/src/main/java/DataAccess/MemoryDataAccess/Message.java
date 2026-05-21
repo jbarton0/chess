@@ -1,3 +1,3 @@
-package dataAccess.MemoryDataAccess;
+package DataAccess.MemoryDataAccess;
 
 public record Message(String message) {}

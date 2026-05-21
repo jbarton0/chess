@@ -1,6 +1,6 @@
 package service;
 
-import dataAccess.DataAccessException;
+import DataAccess.DataAccessException;
 import server.Server;
 
 public class ClearService {
@@ -11,14 +11,14 @@ public class ClearService {
     }
 
     private void clearAllUsers() throws DataAccessException {
-        Server.userMemory.clearUsers();
+        Server.USER_MEMORY.clearUsers();
     }
 
     private void clearAllAuth() throws DataAccessException {
-        Server.authMemory.clearAuth();
+        Server.AUTH_MEMORY.clearAuth();
     }
 
     private void clearAllGames() throws DataAccessException {
-        Server.gameMemory.clearGames();
+        Server.GAME_MEMORY.clearGames();
     }
 }
