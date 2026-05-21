@@ -7,6 +7,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Request.*;
 import service.Result.*;
+
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -49,13 +50,13 @@ class ServiceTests {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
         ArrayList<AuthData> authTokens = userService.listAuth();
-        AuthData data = new AuthData(register.auth(), register.username());
+        AuthData data = new AuthData(register.authToken(), register.username());
         assertTrue(authTokens.contains(data));
-        userService.logout(new LogoutRequest(register.auth()));
+        userService.logout(new LogoutRequest(register.authToken()));
         assertFalse(authTokens.contains(data));
 
         LoginResult loginResult = userService.login(new LoginRequest(register.username(), "b123"));
-        assertTrue(authTokens.contains(new AuthData(loginResult.auth(), loginResult.username())));
+        assertTrue(authTokens.contains(new AuthData(loginResult.authToken(), loginResult.username())));
 
         assertThrows(IncorrectLoginException.class, () -> {
             LoginResult result = userService.login(new LoginRequest("Joe", "joeMomma"));
@@ -67,10 +68,10 @@ class ServiceTests {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
         ArrayList<AuthData> authTokens = userService.listAuth();
-        AuthData data = new AuthData(register.auth(), register.username());
+        AuthData data = new AuthData(register.authToken(), register.username());
         assertTrue(authTokens.contains(data));
 
-        userService.logout(new LogoutRequest(register.auth()));
+        userService.logout(new LogoutRequest(register.authToken()));
         assertFalse(authTokens.contains(data));
 
         assertThrows(NoAuthException.class, () -> {
@@ -82,12 +83,12 @@ class ServiceTests {
     void list() throws DataAccessException {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
-        gameService.create(new CreateRequest(register.auth(), "gameName"));
-        ListResult listResult = gameService.listGames(new ListRequest(register.auth()));
+        gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
         assertTrue(listResult.games().stream().anyMatch(GameData -> GameData.gameName().equals("gameName")));
 
         assertThrows(NoAuthException.class, () -> {
-            gameService.create(new CreateRequest("auth", "gameName"));
+            gameService.create(new CreateRequest("authToken", "gameName"));
         });
     }
 
@@ -95,12 +96,24 @@ class ServiceTests {
     void create() throws DataAccessException {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
-        gameService.create(new CreateRequest(register.auth(), "gameName"));
-        ListResult listResult = gameService.listGames(new ListRequest(register.auth()));
+        gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
         assertTrue(listResult.games().stream().anyMatch(GameData -> GameData.gameName().equals("gameName")));
 
         assertThrows(NoAuthException.class, () -> {
-            gameService.create(new CreateRequest("auth", "gameName"));
+            gameService.create(new CreateRequest("authToken", "gameName"));
+        });
+    }
+
+    @Test
+    void join() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+
+        CreateResult result = gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
+
+        assertThrows(AlreadyTakenException.class, () -> {
+            gameService.join(new JoinRequest(register.authToken(), "WHITE", result.gameID()));
         });
     }
 

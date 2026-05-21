@@ -12,6 +12,8 @@ import java.util.UUID;
 public class UserService {
 
     public RegisterResult register(RegisterRequest registerRequest) throws DataAccessException {
+        if (registerRequest.username()==null || registerRequest.password()==null) throw new BadRequestException("Error: bad request");
+
         UserData u = new UserData(registerRequest.username(), registerRequest.password(), registerRequest.email());
         if (Server.userMemory.getUser(u)) { throw new AlreadyTakenException("Error: username already taken");}
 
@@ -26,6 +28,8 @@ public class UserService {
     }
 
     public LoginResult login(LoginRequest loginRequest) throws DataAccessException {
+        if (loginRequest.username()==null || loginRequest.password()==null) throw new BadRequestException("Error: bad request");
+
         UserData userData = new UserData(loginRequest.username(), loginRequest.password(), "email");
         if (!Server.userMemory.findUser(userData)) { throw new IncorrectLoginException("Error: incorrect login");}
 

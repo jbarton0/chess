@@ -20,8 +20,12 @@ public class AuthMemory implements AuthDAO {
         return authTokens.stream().anyMatch(AuthData -> AuthData.authToken().equals(auth));
     }
 
-    public void deleteAuth(String auth) {
-        AuthData authData = authTokens.stream().filter(AuthData -> AuthData.authToken().equals(auth)).findFirst().orElse(null);
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        return authTokens.stream().filter(AuthData -> AuthData.authToken().equals(authToken)).findFirst().orElse(null);
+    }
+
+    public void deleteAuth(String auth) throws DataAccessException {
+        AuthData authData = getAuth(auth);
         authTokens.remove(authData);
     }
 

@@ -9,7 +9,6 @@ import model.UserData;
 import service.*;
 import service.Request.*;
 import service.Result.*;
-import service.UserService.*;
 import dataAccess.MemoryDataAccess.*;
 
 public class Server {
@@ -27,9 +26,8 @@ public class Server {
                 .post("/session", this::login)
                 .delete("/session", this::logout)
                 .get("/game", this::listGames)
-                .post("/game", this::createGame);
-        // Register your endpoints and exception handlers here.
-
+                .post("/game", this::createGame)
+                .put("/game", this::join);
     }
 
     private void clear(Context context) throws DataAccessException {
@@ -52,6 +50,10 @@ public class Server {
 
         } catch (DataAccessException e) {
             context.status(500);
+
+        } catch (BadRequestException e) {
+            context.result(new Gson().toJson(new Message("Error: bad request")));
+            context.status(400);
         }
     }
 
@@ -70,11 +72,15 @@ public class Server {
 
         } catch (DataAccessException e) {
             context.status(500);
+
+        } catch (BadRequestException e) {
+            context.result(new Gson().toJson(new Message("Error: bad request")));
+            context.status(400);
         }
     }
 
     private void logout(Context context) {
-        String authToken = new Gson().fromJson(context.body(), String.class);
+        String authToken = new Gson().fromJson(context.header("authorization"), String.class);
         LogoutRequest request = new LogoutRequest(authToken);
 
         try {
@@ -91,7 +97,7 @@ public class Server {
     }
 
     private void listGames(Context context) {
-        String authToken = new Gson().fromJson(context.body(), String.class);
+        String authToken = context.header("authorization");
         ListRequest request = new ListRequest(authToken);
 
         try {
@@ -109,7 +115,9 @@ public class Server {
     }
 
     private void createGame(Context context) {
-        CreateRequest request = new Gson().fromJson(context.body(), CreateRequest.class);
+        String authToken = context.header("authorization");
+        CreateRequest req = new Gson().fromJson(context.body(), CreateRequest.class);
+        CreateRequest request = new CreateRequest(authToken, req.gameName());
 
         try {
             CreateResult result = new GameService().create(request);
@@ -122,6 +130,41 @@ public class Server {
 
         } catch (DataAccessException e) {
             context.status(500);
+
+        } catch (BadRequestException e) {
+            context.result(new Gson().toJson(new Message("Error: bad request")));
+            context.status(400);
+        }
+    }
+
+    private void join(Context context) {
+//        JoinRequest request = new Gson().fromJson(context.header("authorization"), JoinRequest.class);
+        String authToken = context.header("authorization");
+        JoinRequest req = new Gson().fromJson(context.body(), JoinRequest.class);
+        JoinRequest request = new JoinRequest(authToken, req.playerColor(), req.gameID());
+
+        try {
+            new GameService().join(new JoinRequest(request.auth(), request.playerColor(), request.gameID()));
+            context.status(200);
+
+        } catch (NoAuthException e) {
+            context.result(new Gson().toJson(new Message("Error: unauthorized")));
+            context.status(401);
+
+        } catch (AlreadyTakenException e) {
+            context.result(new Gson().toJson(new Message("Error: already taken")));
+            context.status(403);
+
+        } catch (NoGameException e) {
+            context.result(new Gson().toJson(new Message("Error: bad request")));
+            context.status(400);
+
+        } catch (DataAccessException e) {
+            context.status(500);
+
+        } catch (BadRequestException e) {
+            context.result(new Gson().toJson(new Message("Error: bad request")));
+            context.status(400);
         }
     }
 
