@@ -17,8 +17,6 @@ public class Server {
     public final static UserMemory USER_MEMORY = new UserMemory();
     public final static AuthMemory AUTH_MEMORY = new AuthMemory();
     public final static GameMemory GAME_MEMORY = new GameMemory();
-//    public final configureDatabase Database = DatabaseManager.configureDatabase();
-
 
     public Server() {
         try {
