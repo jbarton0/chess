@@ -54,12 +54,12 @@ public class UserService {
         Server.AUTH_MEMORY.deleteAuth(authToken);
     }
 
-    public ArrayList<UserData> list() {
+    public ArrayList<UserData> list() throws DataAccessException {
         //for testing purposes
         return Server.USER_MEMORY.listUsers();
     }
 
-    public ArrayList<AuthData> listAuth() {
+    public ArrayList<AuthData> listAuth() throws DataAccessException {
         //for testing purposes
         return Server.AUTH_MEMORY.list();
     }

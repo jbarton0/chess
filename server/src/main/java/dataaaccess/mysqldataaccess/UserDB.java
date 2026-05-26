@@ -30,6 +30,7 @@ public class UserDB implements UserDAO {
     }
 
     public boolean getUser(UserData u) throws DataAccessException {
+        // finds by only username (sees if username exists)
         try (Connection conn = DatabaseManager.getConnection()) {
             var statement = "SELECT username FROM users WHERE username=?";
             try (PreparedStatement ps = conn.prepareStatement(statement)) {
@@ -64,6 +65,25 @@ public class UserDB implements UserDAO {
         String password = rs.getString("password");
         String email = rs.getString("email");
         return new UserData(username, password, email);
+    }
+
+    public boolean findUser(UserData u) throws DataAccessException {
+        //finds user by username && password
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT username, password, email FROM users WHERE username=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, u.username());
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        var user = readUser(rs);
+                        return BCrypt.checkpw(u.password(), user.password());
+                    }
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("unable to retrieve from database");
+        }
     }
 
     public int executeUpdate(String statement, Object... params) throws DataAccessException {
