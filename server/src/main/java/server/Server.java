@@ -2,16 +2,14 @@ package server;
 
 import com.google.gson.Gson;
 import dataaaccess.DataAccessException;
-import dataaaccess.memorydataaccess.AuthMemory;
-import dataaaccess.memorydataaccess.GameMemory;
-import dataaaccess.memorydataaccess.Message;
-import dataaaccess.memorydataaccess.UserMemory;
+import dataaaccess.memorydataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
 import service.*;
 import service.request.*;
 import service.result.*;
+import dataaaccess.DatabaseManager;
 
 public class Server {
 
@@ -19,9 +17,16 @@ public class Server {
     public final static UserMemory USER_MEMORY = new UserMemory();
     public final static AuthMemory AUTH_MEMORY = new AuthMemory();
     public final static GameMemory GAME_MEMORY = new GameMemory();
+//    public final configureDatabase Database = DatabaseManager.configureDatabase();
 
 
     public Server() {
+        try {
+            DatabaseManager.configureDatabase();
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+        }
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clear)
                 .post("/user", this::register)
