@@ -3,6 +3,7 @@ package server;
 import com.google.gson.Gson;
 import dataaaccess.DataAccessException;
 import dataaaccess.memorydataaccess.*;
+import dataaaccess.mysqldataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
@@ -14,9 +15,12 @@ import dataaaccess.DatabaseManager;
 public class Server {
 
     private final Javalin javalin;
-    public final static UserMemory USER_MEMORY = new UserMemory();
-    public final static AuthMemory AUTH_MEMORY = new AuthMemory();
-    public final static GameMemory GAME_MEMORY = new GameMemory();
+//    public final static UserMemory USER_MEMORY = new UserMemory();
+//    public final static AuthMemory AUTH_MEMORY = new AuthMemory();
+//    public final static GameMemory GAME_MEMORY = new GameMemory();
+    public final static UserDB USER_MEMORY = new UserDB();
+    public final static AuthDB AUTH_MEMORY = new AuthDB();
+    public final static GameDB GAME_MEMORY = new GameDB();
 
     public Server() {
         try {
