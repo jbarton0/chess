@@ -1,7 +1,6 @@
 package dataaaccess.mysqldataaccess;
 
 import chess.ChessGame;
-import com.google.gson.Gson;
 import dataaaccess.DataAccessException;
 import dataaaccess.DatabaseManager;
 import dataaaccess.UserDAO;

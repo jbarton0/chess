@@ -12,6 +12,7 @@ import service.request.LoginRequest;
 import service.request.LogoutRequest;
 import service.request.RegisterRequest;
 import service.result.LoginResult;
+import service.result.NoAuthException;
 import service.result.RegisterResult;
 
 import java.util.ArrayList;
@@ -77,6 +78,24 @@ public class DataAccessTests {
 
         assertThrows(IncorrectLoginException.class, () -> {
             LoginResult result = userService.login(new LoginRequest("Joe", "joeMomma"));
+        });
+    }
+
+    @Test
+    void logout() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+
+        AuthData data = new AuthData(register.authToken(), register.username());
+        assertTrue(userService.listAuth().contains(data));
+
+        userService.logout(new LogoutRequest(register.authToken()));
+        assertFalse(userService.listAuth().contains(data));
+    }
+
+    @Test
+    void logoutNegative() throws DataAccessException {
+        assertThrows(NoAuthException.class, () -> {
+            userService.logout(new LogoutRequest("abc"));
         });
     }
 }
