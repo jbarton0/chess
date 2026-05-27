@@ -1,6 +1,7 @@
 package service;
 
 import dataaaccess.DataAccessException;
+import dataaaccess.mysqldataaccess.UserDB;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -12,9 +13,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ServiceTests {
 
-    public UserService userService = new UserService();
-    public ClearService clearService = new ClearService();
-    public GameService gameService = new GameService();
+    private final UserService userService = new UserService();
+    private final ClearService clearService = new ClearService();
+    private final GameService gameService = new GameService();
 
     @BeforeEach
     void clear() throws DataAccessException {
@@ -36,7 +37,8 @@ class ServiceTests {
         RegisterResult register = userService.register(userData);
 
         ArrayList<UserData> users = userService.list();
-        assertTrue(users.contains(u));
+
+        assertTrue(new UserDB().findUser(u));
     }
 
     @Test
@@ -56,10 +58,10 @@ class ServiceTests {
         AuthData data = new AuthData(register.authToken(), register.username());
         assertTrue(authTokens.contains(data));
         userService.logout(new LogoutRequest(register.authToken()));
-        assertFalse(authTokens.contains(data));
+        assertFalse(userService.listAuth().contains(data));
 
         LoginResult loginResult = userService.login(new LoginRequest(register.username(), "b123"));
-        assertTrue(authTokens.contains(new AuthData(loginResult.authToken(), loginResult.username())));
+        assertTrue(userService.listAuth().contains(new AuthData(loginResult.authToken(), loginResult.username())));
     }
 
     @Test
@@ -75,12 +77,11 @@ class ServiceTests {
     void logout() throws DataAccessException {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
-        ArrayList<AuthData> authTokens = userService.listAuth();
         AuthData data = new AuthData(register.authToken(), register.username());
-        assertTrue(authTokens.contains(data));
+        assertTrue(userService.listAuth().contains(data));
 
         userService.logout(new LogoutRequest(register.authToken()));
-        assertFalse(authTokens.contains(data));
+        assertFalse(userService.listAuth().contains(data));
     }
 
     @Test

@@ -59,12 +59,27 @@ public class AuthDB implements AuthDAO {
                 }
             }
         } catch (SQLException e) {
-            throw new DataAccessException("unable to retrieve from database");
+            throw new DataAccessException("Unable to retrieve from database");
         }
     }
 
     public void deleteAuth(String auth) throws DataAccessException {
         var statement = "DELETE FROM authTokens WHERE authToken = ?";
         userDB.executeUpdate(statement, auth);
+    }
+
+    public AuthData getAuth(String authToken) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT authToken, username FROM authTokens WHERE authToken=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setString(1, authToken);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) { return readAuth(rs); }
+                }
+            }
+           return null;
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to retrieve from database");
+        }
     }
 }

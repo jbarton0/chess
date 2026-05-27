@@ -7,6 +7,8 @@ import dataaaccess.GameDAO;
 import model.AuthData;
 import model.GameData;
 import com.google.gson.Gson;
+import server.Server;
+import service.request.JoinRequest;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,6 +60,52 @@ public class GameDB implements GameDAO {
             }
         } catch (SQLException e) {
             throw new DataAccessException("unable to retrieve from database");
+        }
+    }
+
+    public void join(GameData gameData, JoinRequest joinRequest) throws DataAccessException {
+        AuthData auth = Server.AUTH_MEMORY.getAuth(joinRequest.auth());
+        remove(gameData);
+        if (joinRequest.playerColor().equals("WHITE")) {
+            GameData updated = new GameData(gameData.gameID(), auth.username(), gameData.blackUsername(), gameData.gameName(), new ChessGame());
+            create(updated);
+        } else {
+            GameData updated = new GameData(gameData.gameID(), gameData.whiteUsername(), auth.username(), gameData.gameName(), new ChessGame());
+            create(updated);
+        }
+    }
+
+    public void remove(GameData gameData) throws DataAccessException {
+        var statement = "DELETE FROM games WHERE gameID = ?";
+        userDB.executeUpdate(statement, gameData.gameID());
+    }
+
+    public boolean findGame(int id) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID FROM games WHERE gameID=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    return rs.next();
+                }
+            }
+        } catch (SQLException e) {
+            throw new DataAccessException("unable to retrieve from database");
+        }
+    }
+
+    public GameData getGame(int id) throws DataAccessException {
+        try (Connection conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT gameID, whiteusername, blackusername, gameName, game FROM games WHERE gameID=?";
+            try (PreparedStatement ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, id);
+                try (ResultSet rs = ps.executeQuery()) {
+                    if (rs.next()) { return readGame(rs); }
+                }
+            }
+            return null;
+        } catch (SQLException e) {
+            throw new DataAccessException("Unable to retrieve from database");
         }
     }
 }
