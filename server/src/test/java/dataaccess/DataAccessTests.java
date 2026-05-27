@@ -8,9 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mindrot.jbcrypt.BCrypt;
 import service.*;
-import service.request.LoginRequest;
-import service.request.LogoutRequest;
-import service.request.RegisterRequest;
+import service.request.*;
+import service.result.ListResult;
 import service.result.LoginResult;
 import service.result.NoAuthException;
 import service.result.RegisterResult;
@@ -96,6 +95,25 @@ public class DataAccessTests {
     void logoutNegative() throws DataAccessException {
         assertThrows(NoAuthException.class, () -> {
             userService.logout(new LogoutRequest("abc"));
+        });
+    }
+
+    @Test
+    void create() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+
+        gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        gameService.create(new CreateRequest(register.authToken(), "game2"));
+        gameService.create(new CreateRequest(register.authToken(), "game3"));
+        ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
+        assertEquals(3, listResult.games().size());
+        assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
+    }
+
+    @Test
+    void createNegative() throws DataAccessException {
+        assertThrows(NoAuthException.class, () -> {
+            gameService.create(new CreateRequest("authToken", "gameName"));
         });
     }
 }
