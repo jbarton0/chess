@@ -99,6 +99,23 @@ public class DataAccessTests {
     }
 
     @Test
+    void list() throws DataAccessException {
+        RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
+        assertTrue(gameService.listGames(new ListRequest(register.authToken())).games().isEmpty());
+
+        gameService.create(new CreateRequest(register.authToken(), "gameName"));
+        ListResult listResult = gameService.listGames(new ListRequest(register.authToken()));
+        assertTrue(listResult.games().stream().anyMatch(gameData -> gameData.gameName().equals("gameName")));
+    }
+
+    @Test
+    void listNegative() throws DataAccessException {
+        assertThrows(NoAuthException.class, () -> {
+            gameService.create(new CreateRequest("authToken", "gameName"));
+        });
+    }
+
+    @Test
     void create() throws DataAccessException {
         RegisterResult register = userService.register(new RegisterRequest("Bob", "b123", "b@email"));
 
