@@ -16,6 +16,8 @@ public abstract interface UserDAO {
 
     boolean getUser(UserData u) throws DataAccessException;
 
+    boolean findUser(UserData u) throws DataAccessException;
+
     ArrayList<UserData> listUsers() throws DataAccessException;
 }
 
