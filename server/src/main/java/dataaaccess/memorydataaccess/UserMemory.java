@@ -18,7 +18,7 @@ public class UserMemory implements UserDAO {
         return users.stream().anyMatch(userData -> userData.username().equals(u.username()));
     }
 
-    public boolean findUser(UserData u) {
+    public boolean findUser(UserData u) throws DataAccessException {
         //finds user by username && password
         return users.stream().anyMatch(userData -> userData.username().equals(u.username()) && userData.password().equals(u.password()));
     }
