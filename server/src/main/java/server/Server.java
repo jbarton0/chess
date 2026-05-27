@@ -39,9 +39,14 @@ public class Server {
                 .put("/game", this::join);
     }
 
-    private void clear(Context context) throws DataAccessException {
-        new ClearService().clearAll();
-        context.status(200);
+    private void clear(Context context) {
+        try {
+            new ClearService().clearAll();
+            context.status(200);
+        } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to clear")));
+            context.status(500);
+        }
     }
 
     private void register(Context context) {
@@ -58,6 +63,7 @@ public class Server {
             context.status(403);
 
         } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to access database")));
             context.status(500);
 
         } catch (BadRequestException e) {
@@ -80,6 +86,7 @@ public class Server {
             context.status(401);
 
         } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to access database")));
             context.status(500);
 
         } catch (BadRequestException e) {
@@ -101,6 +108,7 @@ public class Server {
             context.status(401);
 
         } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to access database")));
             context.status(500);
         }
     }
@@ -119,6 +127,7 @@ public class Server {
             context.status(401);
 
         } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to access database")));
             context.status(500);
         }
     }
@@ -138,6 +147,7 @@ public class Server {
             context.status(401);
 
         } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to access database")));
             context.status(500);
 
         } catch (BadRequestException e) {
@@ -169,6 +179,7 @@ public class Server {
             context.status(400);
 
         } catch (DataAccessException e) {
+            context.result(new Gson().toJson(new Message("Error: failed to access database")));
             context.status(500);
 
         } catch (BadRequestException e) {
