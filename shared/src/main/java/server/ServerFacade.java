@@ -49,6 +49,12 @@ public class ServerFacade {
         return handleResponse(response, GameList.class);
     }
 
+    public GameData create(GameData gameData) throws ResponseException {
+        var request = buildRequest("POST", "/game", gameData);
+        var response = sendRequest(request);
+        return handleResponse(response, GameData.class);
+    }
+
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
                 .uri(URI.create(serverUrl + path))
