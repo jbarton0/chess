@@ -26,11 +26,11 @@ public class ServerFacade {
         sendRequest(request);
     }
 
-//    public AuthData register(UserData userData) throws ResponseException {
-//        var request = buildRequest("POST", "/user", userData);
-//        var response = sendRequest(request);
-//        return handleResponse(response, AuthData.class);
-//    }
+    public AuthData register(UserData userData) throws ResponseException {
+        var request = buildRequest("POST", "/user", userData);
+        var response = sendRequest(request);
+        return handleResponse(response, AuthData.class);
+    }
 //
 //    public AuthData login(UserData userData) throws ResponseException {
 //        var request = buildRequest("POST", "/session", userData);
