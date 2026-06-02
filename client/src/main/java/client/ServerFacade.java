@@ -26,6 +26,7 @@ public class ServerFacade {
     }
 
     public AuthData register(RegisterRequest registerRequest) throws ResponseException {
+        if (registerRequest.username() == null | registerRequest.password() == null) throw new ResponseException(ResponseException.Code.ClientError, "Error: invalid input");
         var request = buildRequest("POST", "/user", registerRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
