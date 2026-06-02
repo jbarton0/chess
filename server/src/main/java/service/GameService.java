@@ -7,6 +7,9 @@ import request.CreateRequest;
 import request.JoinRequest;
 import request.ListRequest;
 import server.Server;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
+import exception.NoGameException;
 import service.result.*;
 import java.util.Random;
 

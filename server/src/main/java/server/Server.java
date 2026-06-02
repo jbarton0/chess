@@ -9,6 +9,10 @@ import io.javalin.http.Context;
 import model.UserData;
 import request.*;
 import service.*;
+import exception.AlreadyTakenException;
+import exception.BadRequestException;
+import exception.IncorrectLoginException;
+import exception.NoGameException;
 import service.result.*;
 import dataaaccess.DatabaseManager;
 

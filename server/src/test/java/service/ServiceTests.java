@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import request.*;
 import server.Server;
+import exception.AlreadyTakenException;
+import exception.IncorrectLoginException;
 import service.result.*;
 import java.util.ArrayList;
 import static org.junit.jupiter.api.Assertions.*;
