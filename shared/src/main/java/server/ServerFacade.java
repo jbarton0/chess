@@ -43,11 +43,11 @@ public class ServerFacade {
         handleResponse(response, null);
     }
 
-//    public GameList listGames(AuthData authData) throws ResponseException {
-//        var request = buildRequest("GET", "/game", authData);
-//        var response = sendRequest(request);
-//        return handleResponse(response, GameList.class);
-//    }
+    public GameList listGames(AuthData authData) throws ResponseException {
+        var request = buildRequest("GET", "/game", authData);
+        var response = sendRequest(request);
+        return handleResponse(response, GameList.class);
+    }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
