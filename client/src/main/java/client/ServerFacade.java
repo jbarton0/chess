@@ -1,7 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
-import exception.BadRequestException;import exception.ResponseException;
+import exception.ResponseException;
 import model.*;
 
 import java.net.*;

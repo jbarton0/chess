@@ -64,4 +64,17 @@ public class ServerFacadeTests {
         });
     }
 
+    @Test
+    public void logout() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        assertDoesNotThrow(() -> facade.logout(new LogoutRequest(authData.authToken())));
+    }
+
+    @Test
+    public void logoutNeg() throws ResponseException {
+        assertThrows(ResponseException.class, () -> {
+            facade.logout(new LogoutRequest(null));
+        });
+    }
+
 }
