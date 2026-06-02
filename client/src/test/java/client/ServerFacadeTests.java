@@ -22,7 +22,8 @@ public class ServerFacadeTests {
 
 
     @Test
-    public void sampleTest() {
+    public void clearTest() {
+
         Assertions.assertTrue(true);
     }
 
