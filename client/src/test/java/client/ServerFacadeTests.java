@@ -3,10 +3,9 @@ package client;
 import dataaaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
+import model.GameData;
 import org.junit.jupiter.api.*;
-import request.LoginRequest;
-import request.LogoutRequest;
-import request.RegisterRequest;
+import request.*;
 import server.Server;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -76,5 +75,34 @@ public class ServerFacadeTests {
             facade.logout(new LogoutRequest(null));
         });
     }
+
+//    @Test
+//    public void list() throws ResponseException {
+//        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+//        assertDoesNotThrow(() -> facade.listGames(new ListRequest(authData.authToken())));
+//    }
+
+    //listNeg test needed
+
+    @Test
+    public void create() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        GameData gameData = facade.create(new CreateRequest(authData.authToken(), "bob's game"));
+        assertTrue(gameData.gameID()!=0);
+    }
+
+    @Test
+    public void createNeg() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        assertThrows(ResponseException.class, () -> {
+            facade.create(new CreateRequest(authData.authToken(), null));
+        });
+    }
+
+//    @Test
+//    public void join() throws ResponseException {
+//        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+//
+//    }
 
 }

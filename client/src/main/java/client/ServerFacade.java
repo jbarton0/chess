@@ -104,10 +104,6 @@ public class ServerFacade {
         var status = response.statusCode();
         if (!isSuccessful(status)) {
             var body = response.body();
-            if (body != null) {
-                throw new ResponseException("Error: bad input");
-            }
-
             throw new ResponseException("Error: bad input");
         }
 
