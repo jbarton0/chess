@@ -1,8 +1,11 @@
 package client;
 
+import dataaaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 import org.junit.jupiter.api.*;
+import request.LoginRequest;
+import request.LogoutRequest;
 import request.RegisterRequest;
 import server.Server;
 import static org.junit.jupiter.api.Assertions.*;
@@ -22,6 +25,11 @@ public class ServerFacadeTests {
         System.out.println("Started test HTTP server on " + port);
     }
 
+    @BeforeEach
+    void clear() throws ResponseException {
+        facade.clearAll();
+    }
+
     @AfterAll
     static void stopServer() {
         server.stop();
@@ -35,9 +43,24 @@ public class ServerFacadeTests {
     }
 
     @Test
-    public void registerNeg() throws ResponseException {
+    public void registerNeg() {
         assertThrows(ResponseException.class, () -> {
             facade.register(new RegisterRequest(null, "bob", "bob"));
+        });
+    }
+
+    @Test
+    public void login() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        facade.logout(new LogoutRequest(authData.authToken()));
+        AuthData auth = facade.login(new LoginRequest("bob", "bob"));
+        assertTrue(auth.authToken().length() > 10);
+    }
+
+    @Test
+    public void loginNeg() throws ResponseException {
+        assertThrows(ResponseException.class, () -> {
+            facade.login(new LoginRequest(null, "bob"));
         });
     }
 

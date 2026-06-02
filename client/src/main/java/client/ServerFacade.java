@@ -1,7 +1,7 @@
 package client;
 
 import com.google.gson.Gson;
-import exception.ResponseException;
+import exception.BadRequestException;import exception.ResponseException;
 import model.*;
 
 import java.net.*;
@@ -26,19 +26,21 @@ public class ServerFacade {
     }
 
     public AuthData register(RegisterRequest registerRequest) throws ResponseException {
-        if (registerRequest.username() == null | registerRequest.password() == null) throw new ResponseException(ResponseException.Code.ClientError, "Error: invalid input");
+        if (registerRequest.username() == null | registerRequest.password() == null) throw new ResponseException("Error: invalid input");
         var request = buildRequest("POST", "/user", registerRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
     public AuthData login(LoginRequest loginRequest) throws ResponseException {
+        if (loginRequest.username() == null | loginRequest.password() == null) throw new ResponseException("Error: invalid input");
         var request = buildRequest("POST", "/session", loginRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
     public void logout(LogoutRequest logoutRequest) throws ResponseException {
+        if (logoutRequest.auth() == null) throw new ResponseException("Error: invalid input");
         var request = buildRequest("DELETE", "/session", null, logoutRequest.auth());
         var response = sendRequest(request);
         handleResponse(response, null);
@@ -94,7 +96,7 @@ public class ServerFacade {
         try {
             return client.send(request, BodyHandlers.ofString());
         } catch (Exception ex) {
-            throw new ResponseException(ResponseException.Code.ServerError, ex.getMessage());
+            throw new ResponseException(ex.getMessage());
         }
     }
 
@@ -103,10 +105,10 @@ public class ServerFacade {
         if (!isSuccessful(status)) {
             var body = response.body();
             if (body != null) {
-                throw ResponseException.fromJson(body);
+                throw new ResponseException("Error: bad input");
             }
 
-            throw new ResponseException(ResponseException.fromHttpStatusCode(status), "other failure: " + status);
+            throw new ResponseException("Error: bad input");
         }
 
         if (responseClass != null) {
