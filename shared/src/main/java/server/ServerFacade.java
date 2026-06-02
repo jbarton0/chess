@@ -21,10 +21,10 @@ public class ServerFacade {
         serverUrl = url;
     }
 
-//    public void clearAll() throws ResponseException {
-//        var request = buildRequest("DELETE", "/db", null);
-//        sendRequest(request);
-//    }
+    public void clearAll() throws ResponseException {
+        var request = buildRequest("DELETE", "/db", null);
+        sendRequest(request);
+    }
 
 //    public AuthData register(UserData userData) throws ResponseException {
 //        var request = buildRequest("POST", "/user", userData);
