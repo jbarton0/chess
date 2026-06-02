@@ -2,15 +2,14 @@ package server;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
-import model.AuthData;
-import model.UserData;
+import model.*;
 
-import dataaaccess.*;
 import java.net.*;
 import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
+import java.util.Collection;
 
 
 public class ServerFacade {
@@ -37,6 +36,18 @@ public class ServerFacade {
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
+
+    public void logout(AuthData authData) throws ResponseException {
+        var request = buildRequest("DELETE", "/session", authData);
+        var response = sendRequest(request);
+        handleResponse(response, null);
+    }
+
+//    public GameList listGames(AuthData authData) throws ResponseException {
+//        var request = buildRequest("GET", "/game", authData);
+//        var response = sendRequest(request);
+//        return handleResponse(response, GameList.class);
+//    }
 
     private HttpRequest buildRequest(String method, String path, Object body) {
         var request = HttpRequest.newBuilder()
