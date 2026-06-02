@@ -3,8 +3,10 @@ package service;
 import chess.ChessGame;
 import dataaaccess.DataAccessException;
 import model.*;
+import request.CreateRequest;
+import request.JoinRequest;
+import request.ListRequest;
 import server.Server;
-import service.request.*;
 import service.result.*;
 import java.util.Random;
 

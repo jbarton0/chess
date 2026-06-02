@@ -1,4 +1,4 @@
-package server;
+package client;
 
 import com.google.gson.Gson;
 import exception.ResponseException;
@@ -9,7 +9,7 @@ import java.net.http.*;
 import java.net.http.HttpRequest.BodyPublisher;
 import java.net.http.HttpRequest.BodyPublishers;
 import java.net.http.HttpResponse.BodyHandlers;
-import java.util.Collection;
+import request.*;
 
 
 public class ServerFacade {
@@ -21,44 +21,60 @@ public class ServerFacade {
     }
 
     public void clearAll() throws ResponseException {
-        var request = buildRequest("DELETE", "/db", null);
+        var request = buildRequest("DELETE", "/db", null, null);
         sendRequest(request);
     }
 
-    public AuthData register(UserData userData) throws ResponseException {
-        var request = buildRequest("POST", "/user", userData);
+    public AuthData register(RegisterRequest registerRequest) throws ResponseException {
+        var request = buildRequest("POST", "/user", registerRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
-    public AuthData login(UserData userData) throws ResponseException {
-        var request = buildRequest("POST", "/session", userData);
+    public AuthData login(LoginRequest loginRequest) throws ResponseException {
+        var request = buildRequest("POST", "/session", loginRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
-    public void logout(AuthData authData) throws ResponseException {
-        var request = buildRequest("DELETE", "/session", authData);
+    public void logout(LogoutRequest logoutRequest) throws ResponseException {
+        var request = buildRequest("DELETE", "/session", null, logoutRequest.auth());
         var response = sendRequest(request);
         handleResponse(response, null);
     }
 
-    public GameList listGames(AuthData authData) throws ResponseException {
-        var request = buildRequest("GET", "/game", authData);
+    public GameList listGames(ListRequest listRequest) throws ResponseException {
+        var request = buildRequest("GET", "/game", null, listRequest.auth());
         var response = sendRequest(request);
         return handleResponse(response, GameList.class);
     }
 
-    public GameData create(GameData gameData) throws ResponseException {
-        var request = buildRequest("POST", "/game", gameData);
+    public GameData create(CreateRequest createRequest) throws ResponseException {
+        var request = buildRequest("POST", "/game", createRequest, createRequest.auth());
         var response = sendRequest(request);
         return handleResponse(response, GameData.class);
     }
 
-    private HttpRequest buildRequest(String method, String path, Object body) {
-        var request = HttpRequest.newBuilder()
-                .uri(URI.create(serverUrl + path))
-                .method(method, makeRequestBody(body));
+    public void join(JoinRequest joinRequest) throws ResponseException {
+        var request = buildRequest("PUT", "/game", joinRequest, joinRequest.auth());
+        var response = sendRequest(request);
+        handleResponse(response, null);
+    }
+
+    private HttpRequest buildRequest(String method, String path, Object body, String auth) {
+        HttpRequest.Builder request;
+        if (auth != null) {
+            request = HttpRequest.newBuilder()
+                    .uri(URI.create(serverUrl + path))
+                    .header("authorization", auth)
+                    .method(method, makeRequestBody(body));
+        }
+        else {
+            request = HttpRequest.newBuilder()
+                    .uri(URI.create(serverUrl + path))
+                    .method(method, makeRequestBody(body));
+        }
+
         if (body != null) {
             request.setHeader("Content-Type", "application/json");
         }

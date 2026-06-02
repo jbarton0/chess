@@ -7,8 +7,8 @@ import dataaaccess.mysqldataaccess.*;
 import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
+import request.*;
 import service.*;
-import service.request.*;
 import service.result.*;
 import dataaaccess.DatabaseManager;
 

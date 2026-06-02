@@ -1,7 +1,7 @@
 package dataaaccess;
 
 import model.GameData;
-import service.request.JoinRequest;
+import request.JoinRequest;
 
 import java.util.Collection;
 

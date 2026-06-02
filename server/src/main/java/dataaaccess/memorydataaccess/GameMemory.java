@@ -5,7 +5,7 @@ import dataaaccess.DataAccessException;
 import model.*;
 import dataaaccess.GameDAO;
 import server.Server;
-import service.request.JoinRequest;
+import request.JoinRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -6,9 +6,9 @@ import dataaaccess.mysqldataaccess.*;
 import model.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import request.JoinRequest;
 import service.*;
-import service.request.*;
-import service.result.*;
+
 import java.util.ArrayList;
 import java.util.Collection;
 

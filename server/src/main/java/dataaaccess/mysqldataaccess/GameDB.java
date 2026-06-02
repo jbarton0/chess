@@ -8,7 +8,7 @@ import model.AuthData;
 import model.GameData;
 import com.google.gson.Gson;
 import server.Server;
-import service.request.JoinRequest;
+import request.JoinRequest;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;

@@ -2,7 +2,9 @@ package service;
 
 import dataaaccess.DataAccessException;
 import model.*;
-import service.request.*;
+import request.LoginRequest;
+import request.LogoutRequest;
+import request.RegisterRequest;
 import service.result.*;
 import server.Server;
 import java.util.ArrayList;
