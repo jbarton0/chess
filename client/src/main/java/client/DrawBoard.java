@@ -17,11 +17,13 @@ public class DrawBoard {
 
     public static String playingColor = "BLACK";
 
-    public DrawBoard(String color) {
-        playingColor = color;
-    }
+//    public DrawBoard(String color) {
+//        playingColor = color;
+//    }
 
     public static void main(String[] args) {
+
+        playingColor = args[0];
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
 
         out.print(ERASE_SCREEN);

@@ -10,4 +10,8 @@ public class GameList {
     public GameList(ArrayList<GameData> games1) {
         games = games1;
     }
+
+    public ArrayList<GameData> getGames() {
+        return games;
+    }
 }
