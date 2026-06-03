@@ -99,10 +99,19 @@ public class ServerFacadeTests {
         });
     }
 
-//    @Test
-//    public void join() throws ResponseException {
-//        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
-//
-//    }
+    @Test
+    public void join() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        GameData gameData = facade.create(new CreateRequest(authData.authToken(), "bob's game"));
+        assertDoesNotThrow(() -> facade.join(new JoinRequest(authData.authToken(), "WHITE", gameData.gameID())));
+    }
 
+    @Test
+    public void joinNeg() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        GameData gameData = facade.create(new CreateRequest(authData.authToken(), "bob's game"));
+        assertThrows(ResponseException.class, () -> {
+            facade.join(new JoinRequest(authData.authToken(), null, gameData.gameID()));
+        });
+    }
 }
