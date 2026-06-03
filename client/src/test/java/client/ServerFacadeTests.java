@@ -1,6 +1,5 @@
 package client;
 
-import dataaaccess.DataAccessException;
 import exception.ResponseException;
 import model.AuthData;
 import model.GameData;
@@ -76,13 +75,18 @@ public class ServerFacadeTests {
         });
     }
 
-//    @Test
-//    public void list() throws ResponseException {
-//        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
-//        assertDoesNotThrow(() -> facade.listGames(new ListRequest(authData.authToken())));
-//    }
+    @Test
+    public void list() throws ResponseException {
+        AuthData authData = facade.register(new RegisterRequest("bob", "bob", "bob"));
+        assertDoesNotThrow(() -> facade.listGames(new ListRequest(authData.authToken())));
+    }
 
-    //listNeg test needed
+    @Test
+    public void listNeg() throws ResponseException {
+        assertThrows(ResponseException.class, () -> {
+            facade.listGames(new ListRequest(null));
+        });
+    }
 
     @Test
     public void create() throws ResponseException {

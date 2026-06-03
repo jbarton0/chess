@@ -1,12 +1,13 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 
-public class GameList extends ArrayList<GameData> {
+public class GameList {
+    ArrayList<GameData> games;
+
     public GameList() { }
 
-    public GameList(Collection<GameData> games) {
-        super(games);
+    public GameList(ArrayList<GameData> games1) {
+        games = games1;
     }
 }
