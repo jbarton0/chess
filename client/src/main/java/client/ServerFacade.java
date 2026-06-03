@@ -26,21 +26,21 @@ public class ServerFacade {
     }
 
     public AuthData register(RegisterRequest registerRequest) throws ResponseException {
-        if (registerRequest.username() == null | registerRequest.password() == null) throw new ResponseException("Error: invalid input");
+        if (registerRequest.username() == null | registerRequest.password() == null) { throw new ResponseException("Error: invalid input"); }
         var request = buildRequest("POST", "/user", registerRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
     public AuthData login(LoginRequest loginRequest) throws ResponseException {
-        if (loginRequest.username() == null | loginRequest.password() == null) throw new ResponseException("Error: invalid input");
+        if (loginRequest.username() == null | loginRequest.password() == null) { throw new ResponseException("Error: invalid input"); }
         var request = buildRequest("POST", "/session", loginRequest, null);
         var response = sendRequest(request);
         return handleResponse(response, AuthData.class);
     }
 
     public void logout(LogoutRequest logoutRequest) throws ResponseException {
-        if (logoutRequest.auth() == null) throw new ResponseException("Error: invalid input");
+        if (logoutRequest.auth() == null) { throw new ResponseException("Error: invalid input"); }
         var request = buildRequest("DELETE", "/session", null, logoutRequest.auth());
         var response = sendRequest(request);
         handleResponse(response, null);

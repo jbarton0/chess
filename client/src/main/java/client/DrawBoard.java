@@ -92,8 +92,10 @@ public class DrawBoard {
     }
 
     private static void drawTopTwo(PrintStream out) {
-        ArrayList<String> whites = new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
-        ArrayList<String> blacks = new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
+        ArrayList<String> whites =
+                new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
+        ArrayList<String> blacks =
+                new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
 
         boolean isLight = true;
 
@@ -165,8 +167,10 @@ public class DrawBoard {
     }
 
     private static void drawBottomTwo(PrintStream out) {
-        ArrayList<String> whites = new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
-        ArrayList<String> blacks = new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
+        ArrayList<String> whites =
+                new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
+        ArrayList<String> blacks =
+                new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
 
         boolean isLight = true;
 
