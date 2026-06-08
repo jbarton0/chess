@@ -92,14 +92,12 @@ public class DrawBoard {
     }
 
     private static void drawTopTwo(PrintStream out) {
-        ArrayList<String> whites =
-                new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
-        ArrayList<String> blacks =
-                new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
-
         boolean isLight = true;
 
         if (playingColor.equals("WHITE")) {
+            ArrayList<String> blacks =
+                    new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
+
             setGreen(out);
             out.print(" 8 ");
             setLight(out);
@@ -133,6 +131,9 @@ public class DrawBoard {
         }
 
         else {
+            ArrayList<String> whites =
+                    new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_KING,WHITE_QUEEN,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
+
             setGreen(out);
             out.print(" 1 ");
             setLight(out);
@@ -167,14 +168,13 @@ public class DrawBoard {
     }
 
     private static void drawBottomTwo(PrintStream out) {
-        ArrayList<String> whites =
-                new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
-        ArrayList<String> blacks =
-                new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
 
         boolean isLight = true;
 
         if (playingColor.equals("WHITE")) {
+            ArrayList<String> whites =
+                    new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
+
             setGreen(out);
             out.print(" 2 ");
             for (int i=1; i<=4; i++) {
@@ -209,6 +209,8 @@ public class DrawBoard {
         }
 
         else {
+            ArrayList<String> blacks =
+                    new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_KING,BLACK_QUEEN,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
             setGreen(out);
             out.print(" 7 ");
             for (int i=1; i<=4; i++) {

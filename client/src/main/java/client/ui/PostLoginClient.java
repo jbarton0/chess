@@ -70,7 +70,8 @@ public class PostLoginClient {
         int counter = 1;
         if (games.isEmpty()) { return newString.append("There are 0 games available.").toString(); }
         for (var game : games) {
-            newString.append(counter).append(". ").append(game.gameName()).append("\n");
+            newString.append(counter).append(". ").append(game.gameName()).append(" - white player: ")
+                    .append(game.whiteUsername()).append(", black player: ").append(game.blackUsername()).append("\n");
             counter += 1;
         }
         return newString.toString();
@@ -79,7 +80,6 @@ public class PostLoginClient {
     private String create(String... params) throws ResponseException {
         if (params.length == 1) {
             GameData gameData = facade.create(new CreateRequest(PreLoginClient.auth, params[0]));
-//            return "Successfully created game " + gameData.gameName() + ".";
             return "Successfully created game " + params[0] + ".";
         }
         throw new ResponseException("Error: incorrect number of inputs");
@@ -106,8 +106,13 @@ public class PostLoginClient {
     }
 
     private String observe(String... params) throws ResponseException {
-        gameClient.observe();
-        return "Observing game " + params[0];
+        ArrayList<GameData> games = facade.listGames(new ListRequest(PreLoginClient.auth)).getGames();
+        int fakeID = Integer.parseInt(params[0]);
+        if (fakeID <= games.size()) {
+            gameClient.observe();
+            return "Observing game " + params[0];
+        }
+        throw new ResponseException("Error: invalid game ID");
     }
 
     private void assertSignedIn() throws ResponseException {
