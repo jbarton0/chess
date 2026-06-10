@@ -47,7 +47,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command.getAuthToken(), command.getGameID(), ctx.session);
                 case MAKE_MOVE -> makeMove(ctx.session, command.getGameID(), command2.getMove(), command.getAuthToken());
-//                case LEAVE -> exit(action.visitorName(), ctx.session);
+                case LEAVE -> leave(ctx.session, command.getGameID(), command.getAuthToken());
                 case RESIGN -> resign(ctx.session, command.getGameID(), command.getAuthToken());
             }
 
@@ -199,5 +199,27 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameDB.updateGameNoMove(gameData);
         String message = String.format("%s resigned from the game", username);
         connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+    }
+
+    private void leave(Session session, Integer gameID, String auth) throws Exception {
+        if (findBadGameID(session, gameID)) { return; }
+        if (findBadAuth(session, auth)) { return; }
+
+        connections.remove(session, gameID);
+        var username = authDB.getAuth(auth).username();
+        GameData gameData = gameDB.getGame(gameID);
+        GameData newData;
+        if (username.equals(gameData.whiteUsername())) {
+            newData = new GameData(gameID, null, gameData.blackUsername(), gameData.gameName(), gameData.game());
+            gameDB.updateGameWhite(newData);
+        } else if (username.equals(gameData.blackUsername())) {
+            newData = new GameData(gameID, gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
+            gameDB.updateGameBlack(newData);
+        }
+        GameData newDataCheck = gameDB.getGame(gameID);
+
+        String message = String.format("%s left the game", username);
+        connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+
     }
 }
