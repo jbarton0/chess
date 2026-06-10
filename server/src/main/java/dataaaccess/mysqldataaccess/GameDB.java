@@ -1,6 +1,8 @@
 package dataaaccess.mysqldataaccess;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.InvalidMoveException;
 import dataaaccess.DataAccessException;
 import dataaaccess.DatabaseManager;
 import dataaaccess.GameDAO;
@@ -32,6 +34,14 @@ public class GameDB implements GameDAO {
         var json = new Gson().toJson(gameData.game());
         userDB.executeUpdate(statement, gameData.gameID(), gameData.whiteUsername(), gameData.blackUsername(), gameData.gameName(), json);
         return gameData.gameID();
+    }
+
+    public void updateGame(GameData oldGame, ChessMove move) throws DataAccessException, InvalidMoveException {
+        oldGame.game().makeMove(move);
+        GameData newGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+        var statement = "UPDATE games SET game = ? WHERE gameID = ?";
+        var json = new Gson().toJson(newGame.game());
+        userDB.executeUpdate(statement, json, newGame.gameID());
     }
 
     private GameData readGame(ResultSet rs) throws SQLException {
