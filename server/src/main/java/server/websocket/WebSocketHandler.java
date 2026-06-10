@@ -48,7 +48,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
                 case CONNECT -> connect(command.getAuthToken(), command.getGameID(), ctx.session);
                 case MAKE_MOVE -> makeMove(ctx.session, command.getGameID(), command2.getMove(), command.getAuthToken());
 //                case LEAVE -> exit(action.visitorName(), ctx.session);
-//                case RESIGN -> exit(action.visitorName(), ctx.session);
+                case RESIGN -> resign(ctx.session, command.getGameID(), command.getAuthToken());
             }
 
         } catch (Exception ex) {
@@ -118,18 +118,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
     }
 
-    private void updateGame(Session session, Integer gameID, ChessMove move, GameData gameData) throws Exception {
-//        ChessGame game = gameData.game();
-//        var wUser = gameData.whiteUsername();
-//        var bUser = gameData.blackUsername();
-//        var name = gameData.gameName();
-//
-//        gameDB.remove(gameData);
-//        game.makeMove(move);
-//        gameDB.create(new GameData(gameID, wUser, bUser, name, game));
-        gameDB.updateGame(gameData, move);
-    }
-
     private void checkForCheck(Session session, GameData gameData) throws Exception {
         ChessGame.TeamColor color = gameData.game().getTeamTurn();
         String colorStr = new Gson().toJson(color);
@@ -196,5 +184,20 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             return true;
         }
         return false;
+    }
+
+    private void resign(Session session, Integer gameID, String auth) throws Exception {
+        var username = authDB.getAuth(auth).username();
+        GameData gameData = gameDB.getGame(gameID);
+        if (!username.equals(gameData.blackUsername()) && !username.equals(gameData.whiteUsername())) {
+            sendError(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: observers may not make moves"));
+            return;
+        }
+        if (checkGameOver(session, gameData)) { return; }
+
+        gameData.game().GameOver = true;
+        gameDB.updateGameNoMove(gameData);
+        String message = String.format("%s resigned from the game", username);
+        connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
     }
 }

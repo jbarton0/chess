@@ -44,6 +44,13 @@ public class GameDB implements GameDAO {
         userDB.executeUpdate(statement, json, newGame.gameID());
     }
 
+    public void updateGameNoMove(GameData oldGame) throws DataAccessException, InvalidMoveException {
+        GameData newGame = new GameData(oldGame.gameID(), oldGame.whiteUsername(), oldGame.blackUsername(), oldGame.gameName(), oldGame.game());
+        var statement = "UPDATE games SET game = ? WHERE gameID = ?";
+        var json = new Gson().toJson(newGame.game());
+        userDB.executeUpdate(statement, json, newGame.gameID());
+    }
+
     private GameData readGame(ResultSet rs) throws SQLException {
         int gameID = rs.getInt("gameID");
         String whiteUsername = rs.getString("whiteusername");
