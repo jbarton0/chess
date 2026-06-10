@@ -2,22 +2,28 @@ package client.ui;
 
 import client.ServerFacade;
 import client.State;
+import client.websocket.NotificationHandler;
+import client.websocket.WebSocketFacade;
+import com.google.gson.Gson;
 import exception.ResponseException;
 import model.GameData;
 import model.GameList;
 import request.*;
 import ui.EscapeSequences;
+import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class PostLoginClient {
     ServerFacade facade;
+    WebSocketFacade ws;
     GameClient gameClient;
 
     public PostLoginClient(String url) {
         facade = new ServerFacade(url);
-        gameClient = new GameClient(facade);
+        gameClient = new GameClient(url);
+        ws = new WebSocketFacade(url, gameClient);
     }
 
     public String help() {
@@ -95,6 +101,8 @@ public class PostLoginClient {
                 if (fakeID <= games.size()) {
                     var gameID = games.get(fakeID - 1).gameID();
                     facade.join(new JoinRequest(PreLoginClient.auth, upperColor, gameID));
+                    Repl.joinedGame = true;
+                    ws.connect(PreLoginClient.auth, gameID);
                     gameClient.play(upperColor);
                     return "Successfully joined game.";
                 }
@@ -110,6 +118,8 @@ public class PostLoginClient {
         int fakeID = Integer.parseInt(params[0]);
         if (fakeID <= games.size()) {
             gameClient.observe();
+            ws.connect(PreLoginClient.auth, games.get(fakeID - 1).gameID());
+            Repl.joinedGame = true;
             return "Observing game " + params[0];
         }
         throw new ResponseException("Error: invalid game ID");

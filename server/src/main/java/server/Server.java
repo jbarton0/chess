@@ -8,6 +8,7 @@ import io.javalin.*;
 import io.javalin.http.Context;
 import model.UserData;
 import request.*;
+import server.websocket.WebSocketHandler;
 import service.*;
 import exception.AlreadyTakenException;
 import exception.BadRequestException;
@@ -19,6 +20,7 @@ import dataaaccess.DatabaseManager;
 public class Server {
 
     private final Javalin javalin;
+    private final WebSocketHandler webSocketHandler;
     public final static UserDB USER_MEMORY = new UserDB();
     public final static AuthDB AUTH_MEMORY = new AuthDB();
     public final static GameDB GAME_MEMORY = new GameDB();
@@ -30,6 +32,8 @@ public class Server {
             e.printStackTrace();
         }
 
+        webSocketHandler = new WebSocketHandler();
+
         javalin = Javalin.create(config -> config.staticFiles.add("web"))
                 .delete("/db", this::clear)
                 .post("/user", this::register)
@@ -37,7 +41,12 @@ public class Server {
                 .delete("/session", this::logout)
                 .get("/game", this::listGames)
                 .post("/game", this::createGame)
-                .put("/game", this::join);
+                .put("/game", this::join)
+                .ws("/ws", ws -> {
+                    ws.onConnect(webSocketHandler);
+                    ws.onMessage(webSocketHandler);
+                    ws.onClose(webSocketHandler);
+                });
     }
 
     private void clear(Context context) {

@@ -8,11 +8,14 @@ import ui.EscapeSequences;
 public class Repl {
     private final PreLoginClient preClient;
     private final PostLoginClient postClient;
+    private final GameClient gameClient;
     public static State state = State.SIGNEDOUT;
+    public static boolean joinedGame = false;
 
     public Repl(String url) {
         preClient = new PreLoginClient(url);
         postClient = new PostLoginClient(url);
+        gameClient = new GameClient(url);
     }
 
     public void run() {
@@ -32,17 +35,27 @@ public class Repl {
             if (state == State.SIGNEDOUT) {
                 try {
                     result = preClient.eval(line);
-                    System.out.print(result + EscapeSequences.SET_TEXT_COLOR_GREEN);
+                    System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
                 } catch (Exception e) {
-                    System.out.print(e.toString() + EscapeSequences.SET_TEXT_COLOR_RED);
+                    System.out.print(EscapeSequences.SET_TEXT_COLOR_RED + e.toString());
                 }
             }
 
-            else {
+            else if (state == State.SIGNEDIN && !joinedGame) {
                 try {
                     result = postClient.eval(line);
-                    System.out.print(result + EscapeSequences.SET_TEXT_COLOR_GREEN);
+                    System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
+
+                } catch (Exception e) {
+                    System.out.print(e.toString());
+                }
+            }
+
+            else if (state == State.SIGNEDIN && joinedGame) {
+                try {
+                    result = gameClient.eval(line);
+                    System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
                 } catch (Exception e) {
                     System.out.print(e.toString());
