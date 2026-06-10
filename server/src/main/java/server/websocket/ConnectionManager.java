@@ -26,13 +26,15 @@ public class ConnectionManager {
         }
     }
 
-    public void broadcast(Session excludeSession, ServerMessage notification) throws IOException {
+    public void broadcast(Session excludeSession, ServerMessage notification, Integer gameID) throws IOException {
         var msg = new Gson().toJson(notification);
         for (List<Session> lst : connections.values()) {
-            for (Session c : lst) {
-                if (c.isOpen()) {
-                    if (!c.equals(excludeSession)) {
-                        c.getRemote().sendString(msg);
+            if (connections.get(gameID).equals(lst)) {
+                for (Session c : lst) {
+                    if (c.isOpen()) {
+                        if (!c.equals(excludeSession)) {
+                            c.getRemote().sendString(msg);
+                        }
                     }
                 }
             }

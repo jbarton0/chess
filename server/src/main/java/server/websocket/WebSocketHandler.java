@@ -69,7 +69,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         AuthData authData = authDB.getAuth(auth);
         GameData gameData = gameDB.getGame(gameID);
         sendLoadGame(session, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, gameData));
-        sendJoined(session, gameData, authData);
+        sendJoined(session, gameData, authData, gameID);
     }
 
     private void sendLoadGame(Session session, LoadGameMessage msg) throws IOException {
@@ -77,7 +77,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         session.getRemote().sendString(ms);
     }
 
-    private void sendJoined(Session session, GameData gameData, AuthData authData) throws IOException {
+    private void sendJoined(Session session, GameData gameData, AuthData authData, Integer gameID) throws IOException {
         String message;
         if (gameData.whiteUsername().equals(authData.username())) {
             message = String.format("%s has joined the game as WHITE", authData.username());
@@ -87,7 +87,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             message = String.format("%s is observing the game", authData.username());
         }
         var notification = new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
-        connections.broadcast(session, notification);
+        connections.broadcast(session, notification, gameID);
     }
 
     private void sendError(Session session, ErrorMessage msg) throws Exception{
@@ -108,30 +108,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameDB.updateGame(gameData, move);
 
             GameData newData = gameDB.getGame(gameID);
-            connections.broadcast(null, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newData));
+            connections.broadcast(null, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newData), gameID);
             var message = String.format("%s has been moved to %s", move.getStartPosition().toString(), move.getEndPosition().toString());
-            connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
-            checkForCheck(session, newData);
+            connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
+            checkForCheck(session, newData, gameID);
 
         } else {
             sendError(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move"));
         }
     }
 
-    private void checkForCheck(Session session, GameData gameData) throws Exception {
+    private void checkForCheck(Session session, GameData gameData, Integer gameID) throws Exception {
         ChessGame.TeamColor color = gameData.game().getTeamTurn();
         String colorStr = new Gson().toJson(color);
         if (gameData.game().isInCheck(color)) {
             String message = String.format("%s is in check.", colorStr);
-            connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+            connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
 
         } else if (gameData.game().isInCheckmate(color)) {
             String message = String.format("%s is in checkmate.", colorStr);
-            connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+            connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
 
         } else if (gameData.game().isInStalemate(color)) {
             String message = String.format("%s is in stalemate.", colorStr);
-            connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+            connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
         }
     }
 
@@ -198,7 +198,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         gameData.game().GameOver = true;
         gameDB.updateGameNoMove(gameData);
         String message = String.format("%s resigned from the game", username);
-        connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+        connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
     }
 
     private void leave(Session session, Integer gameID, String auth) throws Exception {
@@ -216,10 +216,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             newData = new GameData(gameID, gameData.whiteUsername(), null, gameData.gameName(), gameData.game());
             gameDB.updateGameBlack(newData);
         }
-        GameData newDataCheck = gameDB.getGame(gameID);
 
         String message = String.format("%s left the game", username);
-        connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message));
+        connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
 
     }
 }
