@@ -1,5 +1,10 @@
 package client;
 
+import chess.ChessBoard;
+import chess.ChessGame;
+import chess.ChessPiece;
+import com.google.gson.Gson;
+
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -7,6 +12,8 @@ import java.util.List;
 
 import static ui.EscapeSequences.*;
 import static ui.EscapeSequences.BLACK_KING;
+import static ui.EscapeSequences.BLACK_PAWN;
+import static ui.EscapeSequences.BLACK_ROOK;
 
 public class DrawBoard {
 
@@ -17,30 +24,84 @@ public class DrawBoard {
 
     public static String playingColor = "BLACK";
 
-//    public DrawBoard(String color) {
-//        playingColor = color;
-//    }
+    private static boolean oddRow = true;
 
     public static void main(String[] args) {
-
         playingColor = args[0];
-        var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        ChessGame game = new Gson().fromJson(args[1], ChessGame.class);
+        ChessBoard board = game.getBoard();
 
+        var out = new PrintStream(System.out, false, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
+        out.println();
         drawBorderLine(out);
-        drawTopTwo(out);
 
-        if (playingColor.equals("WHITE")) {
-            drawTwoEmptyLines(out, " 6 ", " 5 ");
-            drawTwoEmptyLines(out, " 4 ", " 3 ");
+        if (playingColor.equals("BLACK")) {
+            for (int i=0; i<8; i++) {
+                printOneRow(i, out, board);
+            }
         } else {
-            drawTwoEmptyLines(out, " 3 ", " 4 ");
-            drawTwoEmptyLines(out, " 5 ", " 6 ");
+            for (int i=7; i>=0; i--) {
+                printOneRow(i, out, board);
+            }
         }
 
-        drawBottomTwo(out);
         drawBorderLine(out);
+        out.print(RESET_TEXT_COLOR);
+    }
+
+    private static void printOneRow(int i, PrintStream out, ChessBoard board) {
+        boolean isLight = true;
+        ChessPiece[] row = board.board[i];
+        setGreen(out);
+        out.print(" " + Integer.toString(i+1) + " ");
+        if (oddRow) {
+            setLight(out);
+            oddRow = false;
+        } else {
+            setDark(out);
+            isLight = false;
+            oddRow = true;
+        }
+
+        for (int j=0; j<8; j++) {
+            ChessPiece p = row[j];
+            String piece = getPiece(p);
+            out.print(piece);
+            if (isLight) {
+                setDark(out);
+                isLight = false;
+            } else {
+                setLight(out);
+                isLight = true;
+            }
+        }
+        setGreen(out);
+        out.print(" " + Integer.toString(i+1) + " ");
+        out.print(RESET_BG_COLOR);
+        out.println();
+    }
+
+    private static String getPiece(ChessPiece piece) {
+        if (piece == null) { return EMPTY; }
+        var type = piece.getPieceType();
+        if (piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
+            if (type.equals(ChessPiece.PieceType.KING)) { return WHITE_KING; }
+            else if (type.equals(ChessPiece.PieceType.QUEEN)) { return WHITE_QUEEN; }
+            else if (type.equals(ChessPiece.PieceType.KNIGHT)) { return WHITE_KNIGHT; }
+            else if (type.equals(ChessPiece.PieceType.BISHOP)) { return WHITE_BISHOP; }
+            else if (type.equals(ChessPiece.PieceType.ROOK)) { return WHITE_ROOK; }
+            else if (type.equals(ChessPiece.PieceType.PAWN)) { return WHITE_PAWN; }
+        } else if (piece.getTeamColor().equals(ChessGame.TeamColor.BLACK)) {
+            if (type.equals(ChessPiece.PieceType.KING)) { return BLACK_KING; }
+            else if (type.equals(ChessPiece.PieceType.QUEEN)) { return BLACK_QUEEN; }
+            else if (type.equals(ChessPiece.PieceType.KNIGHT)) { return BLACK_KNIGHT; }
+            else if (type.equals(ChessPiece.PieceType.BISHOP)) { return BLACK_BISHOP; }
+            else if (type.equals(ChessPiece.PieceType.ROOK)) { return BLACK_ROOK; }
+            else if (type.equals(ChessPiece.PieceType.PAWN)) { return BLACK_PAWN; }
+        }
+        return null;
     }
 
     private static void drawBorderLine(PrintStream out) {
@@ -61,188 +122,6 @@ public class DrawBoard {
         out.print(EMPTY);
         out.print(RESET_BG_COLOR);
         out.println();
-    }
-
-    private static void drawTwoEmptyLines(PrintStream out, String num1, String num2) {
-        setGreen(out);
-        out.print(num1);
-        for (int i=1; i<=4; i++) {
-            setLight(out);
-            out.print(EMPTY);
-            setDark(out);
-            out.print(EMPTY);
-        }
-        setGreen(out);
-        out.print(num1);
-        out.print(RESET_BG_COLOR);
-        out.println();
-
-        setGreen(out);
-        out.print(num2);
-        for (int i=1; i<=4; i++) {
-            setDark(out);
-            out.print(EMPTY);
-            setLight(out);
-            out.print(EMPTY);
-        }
-        setGreen(out);
-        out.print(num2);
-        out.print(RESET_BG_COLOR);
-        out.println();
-    }
-
-    private static void drawTopTwo(PrintStream out) {
-        boolean isLight = true;
-
-        if (playingColor.equals("WHITE")) {
-            ArrayList<String> blacks =
-                    new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_QUEEN,BLACK_KING,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
-
-            setGreen(out);
-            out.print(" 8 ");
-            setLight(out);
-            for (String piece : blacks) {
-                out.print(piece);
-                if (isLight) {
-                    setDark(out);
-                    isLight = false;
-                } else {
-                    setLight(out);
-                    isLight = true;
-                }
-            }
-            setGreen(out);
-            out.print(" 8 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-
-            setGreen(out);
-            out.print(" 7 ");
-            for (int i=1; i<=4; i++) {
-                setDark(out);
-                out.print(BLACK_PAWN);
-                setLight(out);
-                out.print(BLACK_PAWN);
-            }
-            setGreen(out);
-            out.print(" 7 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-        }
-
-        else {
-            ArrayList<String> whites =
-                    new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_KING,WHITE_QUEEN,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
-
-            setGreen(out);
-            out.print(" 1 ");
-            setLight(out);
-            for (String piece : whites) {
-                out.print(piece);
-                if (isLight) {
-                    setDark(out);
-                    isLight = false;
-                } else {
-                    setLight(out);
-                    isLight = true;
-                }
-            }
-            setGreen(out);
-            out.print(" 1 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-
-            setGreen(out);
-            out.print(" 2 ");
-            for (int i=1; i<=4; i++) {
-                setDark(out);
-                out.print(WHITE_PAWN);
-                setLight(out);
-                out.print(WHITE_PAWN);
-            }
-            setGreen(out);
-            out.print(" 2 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-        }
-    }
-
-    private static void drawBottomTwo(PrintStream out) {
-
-        boolean isLight = true;
-
-        if (playingColor.equals("WHITE")) {
-            ArrayList<String> whites =
-                    new ArrayList<>(List.of(WHITE_ROOK,WHITE_KNIGHT,WHITE_BISHOP,WHITE_QUEEN,WHITE_KING,WHITE_BISHOP,WHITE_KNIGHT,WHITE_ROOK));
-
-            setGreen(out);
-            out.print(" 2 ");
-            for (int i=1; i<=4; i++) {
-                setLight(out);
-                out.print(WHITE_PAWN);
-                setDark(out);
-                out.print(WHITE_PAWN);
-            }
-            setGreen(out);
-            out.print(" 2 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-
-            setGreen(out);
-            out.print(" 1 ");
-            setDark(out);
-            isLight = false;
-            for (String piece : whites) {
-                out.print(piece);
-                if (isLight) {
-                    setDark(out);
-                    isLight = false;
-                } else {
-                    setLight(out);
-                    isLight = true;
-                }
-            }
-            setGreen(out);
-            out.print(" 1 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-        }
-
-        else {
-            ArrayList<String> blacks =
-                    new ArrayList<>(List.of(BLACK_ROOK,BLACK_KNIGHT,BLACK_BISHOP,BLACK_KING,BLACK_QUEEN,BLACK_BISHOP,BLACK_KNIGHT,BLACK_ROOK));
-            setGreen(out);
-            out.print(" 7 ");
-            for (int i=1; i<=4; i++) {
-                setLight(out);
-                out.print(BLACK_PAWN);
-                setDark(out);
-                out.print(BLACK_PAWN);
-            }
-            setGreen(out);
-            out.print(" 7 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-
-            setGreen(out);
-            out.print(" 8 ");
-            setDark(out);
-            isLight = false;
-            for (String piece : blacks) {
-                out.print(piece);
-                if (isLight) {
-                    setDark(out);
-                    isLight = false;
-                } else {
-                    setLight(out);
-                    isLight = true;
-                }
-            }
-            setGreen(out);
-            out.print(" 8 ");
-            out.print(RESET_BG_COLOR);
-            out.println();
-        }
     }
 
     private static void setGreen(PrintStream out) {
