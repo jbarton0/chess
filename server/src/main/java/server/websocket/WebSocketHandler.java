@@ -1,10 +1,8 @@
 package server.websocket;
 
-import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
-import dataaaccess.DataAccessException;
 import dataaaccess.mysqldataaccess.GameDB;
 import io.javalin.websocket.WsCloseContext;
 import io.javalin.websocket.WsCloseHandler;
@@ -17,6 +15,9 @@ import model.GameData;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
 import org.eclipse.jetty.websocket.api.Session;
 
 import dataaaccess.mysqldataaccess.AuthDB;
@@ -30,7 +31,6 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     private final ConnectionManager connections = new ConnectionManager();
     private final AuthDB authDB = new AuthDB();
     private final GameDB gameDB = new GameDB();
-//    private final ChessGame chessGame = new ChessGame();
 
     @Override
     public void handleConnect(WsConnectContext ctx) {
@@ -47,7 +47,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             switch (command.getCommandType()) {
                 case CONNECT -> connect(command.getAuthToken(), command.getGameID(), ctx.session);
                 case MAKE_MOVE -> makeMove(ctx.session, command.getGameID(), command2.getMove(), command.getAuthToken());
-                case LEAVE -> leave(ctx.session, command.getGameID(), command.getAuthToken());
+                case LEAVE -> leave(ctx.session, command.getAuthToken(), command.getGameID());
                 case RESIGN -> resign(ctx.session, command.getGameID(), command.getAuthToken());
             }
 
@@ -201,11 +201,9 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
     }
 
-    private void leave(Session session, Integer gameID, String auth) throws Exception {
-        if (findBadGameID(session, gameID)) { return; }
+    private void leave(Session session, String auth, Integer gameID) throws Exception {
         if (findBadAuth(session, auth)) { return; }
 
-        connections.remove(session, gameID);
         var username = authDB.getAuth(auth).username();
         GameData gameData = gameDB.getGame(gameID);
         GameData newData;
@@ -219,6 +217,13 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         String message = String.format("%s left the game", username);
         connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
-
+        connections.remove(session, gameID);
     }
+
+//    private Integer getGameID(Session session) {
+//        for (Map.Entry<Integer, List<Session>> lst : connections.connections.entrySet()) {
+//            if (lst.getValue().contains(session)) { return lst.getKey(); }
+//        }
+//        return null;
+//    }
 }

@@ -100,6 +100,7 @@ public class PostLoginClient {
                 int fakeID = Integer.parseInt(params[0]);
                 if (fakeID <= games.size()) {
                     var gameID = games.get(fakeID - 1).gameID();
+                    Repl.id = gameID;
                     facade.join(new JoinRequest(PreLoginClient.auth, upperColor, gameID));
                     Repl.joinedGame = true;
                     ws.connect(PreLoginClient.auth, gameID);
@@ -118,7 +119,8 @@ public class PostLoginClient {
         int fakeID = Integer.parseInt(params[0]);
         if (fakeID <= games.size()) {
             gameClient.observe();
-            ws.connect(PreLoginClient.auth, games.get(fakeID - 1).gameID());
+            Repl.id = games.get(fakeID - 1).gameID();
+            ws.connect(PreLoginClient.auth, Repl.id);
             Repl.joinedGame = true;
             return "Observing game " + params[0];
         }

@@ -3,7 +3,6 @@ package client.websocket;
 import jakarta.websocket.*;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import com.google.gson.Gson;
 
 import exception.ResponseException;
@@ -75,14 +74,14 @@ public class WebSocketFacade extends Endpoint {
 //        }
 //    }
 //
-//    public void leave(String authToken, Integer gameID) throws ResponseException {
-//        try {
-//            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
-//            this.session.getBasicRemote().sendText(new Gson().toJson(command));
-//        } catch (IOException ex) {
-//            throw new ResponseException(ex.getMessage());
-//        }
-//    }
+    public void leave(String authToken, Integer gameID) throws ResponseException {
+        try {
+            var command = new UserGameCommand(UserGameCommand.CommandType.LEAVE, authToken, gameID);
+            this.session.getBasicRemote().sendText(new Gson().toJson(command));
+        } catch (IOException ex) {
+            throw new ResponseException(ex.getMessage());
+        }
+    }
 //
 //    public void resign(String authToken, Integer gameID) throws ResponseException {
 //        try {

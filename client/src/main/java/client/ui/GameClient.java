@@ -5,6 +5,7 @@ import client.ServerFacade;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import com.google.gson.Gson;
+import exception.ResponseException;
 import ui.EscapeSequences;
 import websocket.messages.ServerMessage;
 
@@ -49,7 +50,7 @@ public class GameClient implements NotificationHandler {
 
             return switch (cmd) {
 //                case "redraw" -> redraw();
-//                case "leave" -> leave();
+                case "leave" -> leave();
 //                case "move" -> move(params);
 //                case "resign" -> resign(params);
 //                case "highlight" -> highlight(params);
@@ -71,7 +72,19 @@ public class GameClient implements NotificationHandler {
         DrawBoard.main(playingColor);
     }
 
-    public void leave() {
-        Repl.joinedGame = false;
+//    private String redraw() {
+//
+//    }
+
+    private String leave() {
+        try {
+            ws.leave(PreLoginClient.auth, Repl.id);
+            Repl.joinedGame = false;
+            Repl.id = null;
+            return "Left the game.";
+
+        } catch (ResponseException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

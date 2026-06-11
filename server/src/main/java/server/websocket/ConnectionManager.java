@@ -21,9 +21,6 @@ public class ConnectionManager {
         if (connections.containsKey(gameID)) {
             connections.get(gameID).remove(session);
         }
-        if (connections.get(gameID).isEmpty()) {
-            connections.remove(gameID);
-        }
     }
 
     public void broadcast(Session excludeSession, ServerMessage notification, Integer gameID) throws IOException {

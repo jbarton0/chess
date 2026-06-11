@@ -11,6 +11,7 @@ public class Repl {
     private final GameClient gameClient;
     public static State state = State.SIGNEDOUT;
     public static boolean joinedGame = false;
+    public static Integer id;
 
     public Repl(String url) {
         preClient = new PreLoginClient(url);
