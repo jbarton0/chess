@@ -197,7 +197,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
 
         gameData.game().GameOver = true;
         gameDB.updateGameNoMove(gameData);
-        String message = String.format("%s resigned from the game", username);
+        String message = String.format("%s resigned. The game is now over", username);
         connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
     }
 

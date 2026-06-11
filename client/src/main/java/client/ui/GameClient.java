@@ -57,7 +57,7 @@ public class GameClient implements NotificationHandler {
 //                case "redraw" -> redraw();
                 case "leave" -> leave();
                 case "move" -> move(params);
-//                case "resign" -> resign(params);
+                case "resign" -> resign();
 //                case "highlight" -> highlight(params);
                 default -> help();
             };
@@ -101,7 +101,7 @@ public class GameClient implements NotificationHandler {
 
         try {
             ws.makeMove(PreLoginClient.auth, Repl.id, move);
-            return "Move successful.";
+            return "";
         } catch (ResponseException e) {
             throw new RuntimeException(e);
         }
@@ -144,5 +144,10 @@ public class GameClient implements NotificationHandler {
         } else {
             throw new ResponseException("Error: invalid promotion piece");
         }
+    }
+
+    private String resign() throws ResponseException {
+        ws.resign(PreLoginClient.auth, Repl.id);
+        return "Successfully resigned.";
     }
 }
