@@ -120,7 +120,7 @@ public class PostLoginClient {
         int fakeID = Integer.parseInt(params[0]);
         if (fakeID <= games.size()) {
             Repl.id = games.get(fakeID - 1).gameID();
-            gameClient.printBoard("WHITE", games.get(Repl.id));
+//            gameClient.printBoard("WHITE", games.get(fakeID-1));
             ws.connect(PreLoginClient.auth, Repl.id);
             Repl.joinedGame = true;
             return "Observing game " + params[0];

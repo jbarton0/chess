@@ -57,6 +57,11 @@ public class Repl {
             else if (state == State.SIGNEDIN && joinedGame) {
                 try {
                     result = gameClient.eval(line);
+                    if (result.equals("resignConfirm")) {
+                        System.out.print("\nAre you sure you want to resign? <yes/no> >>> " + EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD);
+                        line = scanner.nextLine();
+                        result = gameClient.resign(line);
+                    }
                     System.out.print(EscapeSequences.SET_TEXT_COLOR_BLUE + result);
 
                 } catch (Exception e) {

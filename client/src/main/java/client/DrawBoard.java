@@ -8,6 +8,7 @@ import model.GameData;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static ui.EscapeSequences.*;
@@ -20,6 +21,7 @@ public class DrawBoard {
     private boolean oddRow = true;
 
     public void drawIt(String playingColor, GameData gameData) {
+        if (playingColor == null) { playingColor = "WHITE"; }
         ChessGame game = gameData.game();
         ChessBoard board = game.getBoard();
 
@@ -36,6 +38,73 @@ public class DrawBoard {
         } else {
             for (int i=7; i>=0; i--) {
                 printOneRow(i, out, board);
+            }
+        }
+
+        drawBorderLine(out, playingColor);
+        out.print(RESET_TEXT_COLOR);
+    }
+
+    private void printHighlightRow(int i, PrintStream out, ChessBoard board, Collection<String> validMoves, String chosen) {
+
+        boolean isLight = true;
+        ChessPiece[] row = board.board[i];
+        setGreen(out);
+        out.print(" " + Integer.toString(i+1) + " ");
+        if (oddRow) {
+            setLight(out);
+            oddRow = false;
+        } else {
+            setDark(out);
+            isLight = false;
+            oddRow = true;
+        }
+
+        for (int j=0; j<8; j++) {
+            ChessPiece p = row[j];
+            String piece = getPiece(p);
+            String str = Integer.toString(i+1) + "," + Integer.toString(j+1);
+            if (validMoves.contains(str) && isLight) {
+                setHighLight(out);
+            } else if (validMoves.contains(str) && !isLight) {
+                setHighDark(out);
+            } else if (str.equals(chosen)) {
+                setHigh(out);
+            }
+
+            out.print(piece);
+            if (isLight) {
+                setDark(out);
+                isLight = false;
+            } else {
+                setLight(out);
+                isLight = true;
+            }
+        }
+        setGreen(out);
+        out.print(" " + Integer.toString(i+1) + " ");
+        out.print(RESET_BG_COLOR);
+        out.println();
+    }
+
+    public void drawHighlight(String playingColor, GameData gameData, Collection<String> validMoves, String chosen) {
+        if (playingColor == null) { playingColor = "WHITE"; }
+        ChessGame game = gameData.game();
+        ChessBoard board = game.getBoard();
+
+        var out = new PrintStream(System.out, false, StandardCharsets.UTF_8);
+        out.print(ERASE_SCREEN);
+
+        out.println();
+        drawBorderLine(out, playingColor);
+
+        if (playingColor.equals("BLACK")) {
+            for (int i=0; i<8; i++) {
+                printHighlightRow(i, out, board, validMoves, chosen);
+            }
+        } else {
+            for (int i=7; i>=0; i--) {
+                printHighlightRow(i, out, board, validMoves, chosen);
             }
         }
 
@@ -128,6 +197,21 @@ public class DrawBoard {
 
     private void setLight(PrintStream out) {
         out.print(SET_BG_COLOR_BEIGE);
+        out.print(SET_TEXT_COLOR_DARK_GREY);
+    }
+
+    private void setHighLight(PrintStream out) {
+        out.print(SET_BG_COLOR_HIGHLIGHT_LIGHT);
+        out.print(SET_TEXT_COLOR_DARK_GREY);
+    }
+
+    private void setHighDark(PrintStream out) {
+        out.print(SET_BG_COLOR_HIGHLIGHT_DARK);
+        out.print(SET_TEXT_COLOR_DARK_GREY);
+    }
+
+    private void setHigh(PrintStream out) {
+        out.print(SET_BG_COLOR_HIGHLIGHT);
         out.print(SET_TEXT_COLOR_DARK_GREY);
     }
 }

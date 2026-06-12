@@ -8,7 +8,7 @@ import client.DrawBoard;
 import client.ServerFacade;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
-import com.google.gson.Gson;
+import mysqldataaccess.GameDB;
 import exception.ResponseException;
 import model.GameData;
 import ui.EscapeSequences;
@@ -20,6 +20,7 @@ import websocket.messages.ServerMessage;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class GameClient implements NotificationHandler {
@@ -55,7 +56,7 @@ public class GameClient implements NotificationHandler {
             game = ((LoadGameMessage) message).getGame();
             mostRecent = game;
             printBoard(Repl.chosenColor, game);
-            txt = new Gson().toJson(game);
+            txt = "";
         }
         System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + txt);
         printPrompt();
@@ -75,8 +76,8 @@ public class GameClient implements NotificationHandler {
                 case "redraw" -> redraw();
                 case "leave" -> leave();
                 case "move" -> move(params);
-                case "resign" -> resign();
-//                case "highlight" -> highlight(params);
+                case "resign" -> resignConfirm();
+                case "highlight" -> highlight(params);
                 default -> help();
             };
 
@@ -87,7 +88,6 @@ public class GameClient implements NotificationHandler {
 
     // to observe, use this function and pass in "WHITE""
     public void printBoard(String color, GameData game) {
-//        String[] playingColor = new String[]{color, new Gson().toJson(game)};
         new DrawBoard().drawIt(color, game);
     }
 
@@ -143,6 +143,12 @@ public class GameClient implements NotificationHandler {
         if (!cols.contains(s) | !cols.contains(e) | s2<1 | s2>8 | e2<1 | e2>8) {
             throw new ResponseException("Error: invalid move");
         }
+        GameData gameData = new GameDB().getGame(Repl.id);
+        if (startPos != null) {
+            if (gameData.game().getBoard().getPiece(startPos) == null) {
+                throw new ResponseException("Error: no piece in that position");
+            }
+        }
         return new ChessMove(startPos, endPos, findPromotion(promotion));
     }
 
@@ -162,8 +168,61 @@ public class GameClient implements NotificationHandler {
         }
     }
 
-    private String resign() throws ResponseException {
-        ws.resign(PreLoginClient.auth, Repl.id);
-        return "Successfully resigned.";
+    private String resignConfirm() {
+        return "resignConfirm";
+    }
+
+    public String resign(String input) throws ResponseException {
+        if (input.equalsIgnoreCase("yes")) {
+            ws.resign(PreLoginClient.auth, Repl.id);
+            return "Successfully resigned.";
+        } else {
+            return "Did not resign.";
+        }
+    }
+
+    private String highlight(String... params) throws Exception {
+        ChessPosition pos = findPos(params[0]);
+        GameData gameData = new GameDB().getGame(Repl.id);
+        if (pos != null) {
+            if (gameData.game().getBoard().getPiece(pos) == null) {
+                throw new ResponseException("Error: no piece in that position");
+            }
+        }
+        Collection<ChessMove> moves = new ChessGame().validMoves(pos);
+        //make into a collection of strings for end positions "2,4" and if i+1,j+1 match those then paint browns
+        Collection<String> stringMoves = makeStringPos(moves);
+        String chosen = pos.getRow() + "," + pos.getColumn();
+        new DrawBoard().drawHighlight(Repl.chosenColor, mostRecent, stringMoves, chosen);
+        return "Valid moves highlighted.";
+    }
+
+    private Collection<String> makeStringPos(Collection<ChessMove> moves) {
+        Collection<String> stringMoves = new ArrayList<>();
+        for (ChessMove move : moves) {
+            ChessPosition endPos = move.getEndPosition();
+            String str = endPos.getRow() + "," + endPos.getColumn();
+            stringMoves.add(str);
+        }
+        return stringMoves;
+    }
+
+    private ChessPosition findPos(String spot) throws Exception {
+        List<Character> cols = new ArrayList<>(List.of('a','b','c','d','e','f','g','h'));
+        Character s1 = spot.charAt(0);
+        Integer s2 = spot.charAt(1)-'0';
+        ChessPosition pos = null;
+
+        for (int i=1; i<=8; i++) {
+            if (s1.equals(cols.get(i - 1))) {
+                pos = new ChessPosition(s2, i);
+            }
+        }
+
+        if (!cols.contains(s1) | s2<1 | s2>8) {
+            throw new ResponseException("Error: invalid move");
+        }
+
+        return pos;
     }
 }
