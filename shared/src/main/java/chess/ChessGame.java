@@ -110,7 +110,7 @@ public class ChessGame {
         return isInCheckHelper(teamColor, realBoard);
     }
 
-    private boolean isInCheckHelper(TeamColor teamColor, ChessBoard board) {
+    public boolean isInCheckHelper(TeamColor teamColor, ChessBoard board) {
         ChessPosition kingPos = findKing(teamColor, board);
         for (int i=0; i<8; i++) {
             for (int j=0; j<8; j++) {

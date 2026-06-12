@@ -106,29 +106,30 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
             gameDB.updateGame(gameData, move);
 
             GameData newData = gameDB.getGame(gameID);
+            var username = authDB.getAuth(auth).username();
             connections.broadcast(null, new LoadGameMessage(ServerMessage.ServerMessageType.LOAD_GAME, newData), gameID);
-            var message = String.format("%s has been moved to %s", move.getStartPosition().toString(), move.getEndPosition().toString());
+            var message = String.format("%s moved %s to %s", username, move.getStartPosition().toString(), move.getEndPosition().toString());
             connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
-            checkForCheck(session, newData, gameID);
+            checkForCheck(session, newData, gameID, username);
 
         } else {
             sendError(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: invalid move"));
         }
     }
 
-    private void checkForCheck(Session session, GameData gameData, Integer gameID) throws Exception {
+    private void checkForCheck(Session session, GameData gameData, Integer gameID, String username) throws Exception {
         ChessGame.TeamColor color = gameData.game().getTeamTurn();
         String colorStr = new Gson().toJson(color);
-        if (gameData.game().isInCheck(color)) {
-            String message = String.format("%s is in check.", colorStr);
+        if (gameData.game().isInCheckmate(color)) {
+            String message = String.format("%s (%s) is in checkmate.", username, colorStr);
             connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
 
-        } else if (gameData.game().isInCheckmate(color)) {
-            String message = String.format("%s is in checkmate.", colorStr);
+        } else if (gameData.game().isInCheck(color)) {
+            String message = String.format("%s (%s) is in check.", username, colorStr);
             connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
 
         } else if (gameData.game().isInStalemate(color)) {
-            String message = String.format("%s is in stalemate.", colorStr);
+            String message = String.format("%s (%s) is in stalemate.", username, colorStr);
             connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
         }
     }
@@ -214,7 +215,8 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
 
         String message = String.format("%s left the game", username);
-        connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
         connections.remove(session, gameID);
+        connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
+
     }
 }

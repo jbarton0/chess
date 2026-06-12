@@ -33,11 +33,11 @@ public class DrawBoard {
 
         if (playingColor.equals("BLACK")) {
             for (int i=0; i<8; i++) {
-                printOneRow(i, out, board);
+                printOneRow(i, out, board, playingColor);
             }
         } else {
             for (int i=7; i>=0; i--) {
-                printOneRow(i, out, board);
+                printOneRow(i, out, board, playingColor);
             }
         }
 
@@ -45,36 +45,9 @@ public class DrawBoard {
         out.print(RESET_TEXT_COLOR);
     }
 
-    private void printHighlightRow(int i, PrintStream out, ChessBoard board, Collection<String> validMoves, String chosen) {
+    private void printHighlightRow(int i, PrintStream out, ChessBoard board, Collection<String> validMoves, String chosen, String playingColor) {
 
         boolean isLight = true;
-        ChessPiece[] row = firstHalf(isLight, out, board, i);
-
-        for (int j=0; j<8; j++) {
-            ChessPiece p = row[j];
-            String piece = getPiece(p);
-            String str = Integer.toString(i+1) + "," + Integer.toString(j+1);
-            if (validMoves.contains(str) && isLight) {
-                setHighLight(out);
-            } else if (validMoves.contains(str) && !isLight) {
-                setHighDark(out);
-            } else if (str.equals(chosen)) {
-                setHigh(out);
-            }
-
-            out.print(piece);
-            if (isLight) {
-                setDark(out);
-                isLight = false;
-            } else {
-                setLight(out);
-                isLight = true;
-            }
-        }
-        secondHalf(out, i);
-    }
-
-    private ChessPiece[] firstHalf(boolean isLight, PrintStream out, ChessBoard board, int i){
         ChessPiece[] row = board.board[i];
         setGreen(out);
         out.print(" " + Integer.toString(i+1) + " ");
@@ -86,7 +59,52 @@ public class DrawBoard {
             isLight = false;
             oddRow = true;
         }
-        return row;
+        if (playingColor.equals("BLACK")) {
+            for (int j=7; j>=0; j--) {
+                ChessPiece p = row[j];
+                String piece = getPiece(p);
+                String str = Integer.toString(i+1) + "," + Integer.toString(j+1);
+                if (validMoves.contains(str) && isLight) {
+                    setHighLight(out);
+                } else if (validMoves.contains(str) && !isLight) {
+                    setHighDark(out);
+                } else if (str.equals(chosen)) {
+                    setHigh(out);
+                }
+
+                out.print(piece);
+                if (isLight) {
+                    setDark(out);
+                    isLight = false;
+                } else {
+                    setLight(out);
+                    isLight = true;
+                }
+            }
+        } else {
+            for (int j=0; j<8; j++) {
+                ChessPiece p = row[j];
+                String piece = getPiece(p);
+                String str = Integer.toString(i+1) + "," + Integer.toString(j+1);
+                if (validMoves.contains(str) && isLight) {
+                    setHighLight(out);
+                } else if (validMoves.contains(str) && !isLight) {
+                    setHighDark(out);
+                } else if (str.equals(chosen)) {
+                    setHigh(out);
+                }
+
+                out.print(piece);
+                if (isLight) {
+                    setDark(out);
+                    isLight = false;
+                } else {
+                    setLight(out);
+                    isLight = true;
+                }
+            }
+        }
+        secondHalf(out, i);
     }
 
     private void secondHalf(PrintStream out, int i) {
@@ -109,11 +127,11 @@ public class DrawBoard {
 
         if (playingColor.equals("BLACK")) {
             for (int i=0; i<8; i++) {
-                printHighlightRow(i, out, board, validMoves, chosen);
+                printHighlightRow(i, out, board, validMoves, chosen, playingColor);
             }
         } else {
             for (int i=7; i>=0; i--) {
-                printHighlightRow(i, out, board, validMoves, chosen);
+                printHighlightRow(i, out, board, validMoves, chosen, playingColor);
             }
         }
 
@@ -121,20 +139,44 @@ public class DrawBoard {
         out.print(RESET_TEXT_COLOR);
     }
 
-    private void printOneRow(int i, PrintStream out, ChessBoard board) {
+    private void printOneRow(int i, PrintStream out, ChessBoard board, String playingColor) {
         boolean isLight = true;
-        ChessPiece[] row = firstHalf(isLight, out, board, i);
-
-        for (int j=0; j<8; j++) {
-            ChessPiece p = row[j];
-            String piece = getPiece(p);
-            out.print(piece);
-            if (isLight) {
-                setDark(out);
-                isLight = false;
-            } else {
-                setLight(out);
-                isLight = true;
+        ChessPiece[] row = board.board[i];
+        setGreen(out);
+        out.print(" " + Integer.toString(i+1) + " ");
+        if (oddRow) {
+            setLight(out);
+            oddRow = false;
+        } else {
+            setDark(out);
+            isLight = false;
+            oddRow = true;
+        }
+        if (playingColor.equals("BLACK")) {
+            for (int j=7; j>=0; j--) {
+                ChessPiece p = row[j];
+                String piece = getPiece(p);
+                out.print(piece);
+                if (isLight) {
+                    setDark(out);
+                    isLight = false;
+                } else {
+                    setLight(out);
+                    isLight = true;
+                }
+            }
+        } else {
+            for (int j=0; j<8; j++) {
+                ChessPiece p = row[j];
+                String piece = getPiece(p);
+                out.print(piece);
+                if (isLight) {
+                    setDark(out);
+                    isLight = false;
+                } else {
+                    setLight(out);
+                    isLight = true;
+                }
             }
         }
         secondHalf(out, i);

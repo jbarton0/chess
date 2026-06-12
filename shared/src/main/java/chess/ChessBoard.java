@@ -79,7 +79,7 @@ public class ChessBoard implements Cloneable{
     }
 
     @Override
-    protected Object clone() {
+    public Object clone() {
         ChessBoard cloned = new ChessBoard();
 
         for (int i=0; i<8; i++) {

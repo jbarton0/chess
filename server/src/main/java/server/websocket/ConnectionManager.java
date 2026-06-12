@@ -9,9 +9,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class ConnectionManager {
-    public final Map<Integer, List<Session>> connections = new HashMap<>();
+    public Map<Integer, List<Session>> connections = new ConcurrentHashMap<>();
 
     public void add(Session session, Integer gameID) {
         connections.computeIfAbsent(gameID, k -> new ArrayList<>()).add(session);
@@ -19,7 +20,8 @@ public class ConnectionManager {
 
     public void remove(Session session, Integer gameID) {
         if (connections.containsKey(gameID)) {
-            connections.get(gameID).remove(session);
+            var game = connections.get(gameID);
+            game.remove(session);
         }
     }
 

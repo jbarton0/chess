@@ -1,9 +1,6 @@
 package client.ui;
 
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
-import chess.ChessPosition;
+import chess.*;
 import client.DrawBoard;
 import client.ServerFacade;
 import client.websocket.NotificationHandler;
@@ -38,7 +35,7 @@ public class GameClient implements NotificationHandler {
                 help -- possible actions
                 redraw -- redraw chess board
                 leave -- exit current game
-                move <starting position> <ending position> <promotion piece ('null' if n/a)> -- make a new move
+                move <starting position> <ending position> -- make a new move
                 resign -- forfeit current game
                 highlight <position> -- highlights all possible moves for a piece
                 """;
@@ -111,8 +108,8 @@ public class GameClient implements NotificationHandler {
     private String move(String... params) throws Exception {
         String start = params[0];
         String end = params[1];
-        String promotion = params[2];
-        ChessMove move = createMove(start, end, promotion);
+//        String promotion = params[2];
+        ChessMove move = createMove(start, end);
 
         try {
             ws.makeMove(PreLoginClient.auth, Repl.id, move);
@@ -122,7 +119,7 @@ public class GameClient implements NotificationHandler {
         }
     }
 
-    private ChessMove createMove(String start, String end, String promotion) throws ResponseException {
+    private ChessMove createMove(String start, String end) throws ResponseException {
         List<Character> cols = new ArrayList<>(List.of('a','b','c','d','e','f','g','h'));
         ChessPosition startPos = null;
         ChessPosition endPos = null;
@@ -147,7 +144,7 @@ public class GameClient implements NotificationHandler {
                 throw new ResponseException("Error: no piece in that position");
             }
         }
-        return new ChessMove(startPos, endPos, findPromotion(promotion));
+        return new ChessMove(startPos, endPos, null);
     }
 
     private ChessPiece.PieceType findPromotion(String piece) throws ResponseException {
@@ -186,8 +183,8 @@ public class GameClient implements NotificationHandler {
                 throw new ResponseException("Error: no piece in that position");
             }
         }
-        Collection<ChessMove> moves = new ChessGame().validMoves(pos);
-        //make into a collection of strings for end positions "2,4" and if i+1,j+1 match those then paint browns
+        Collection<ChessMove> moves = validMoves(pos);
+
         Collection<String> stringMoves = makeStringPos(moves);
         String chosen = pos.getRow() + "," + pos.getColumn();
         new DrawBoard().drawHighlight(Repl.chosenColor, mostRecent, stringMoves, chosen);
@@ -221,5 +218,28 @@ public class GameClient implements NotificationHandler {
         }
 
         return pos;
+    }
+
+    private Collection<ChessMove> validMoves(ChessPosition pos) {
+        ChessBoard board = mostRecent.game().getBoard();
+        Collection<ChessMove> possibleMoves = board.getPiece(pos).pieceMoves(board, pos);
+        Collection<ChessMove> valid = new ArrayList<>();
+        for (ChessMove move : possibleMoves) {
+            if (isMoveValid(move, pos, possibleMoves)) {
+                valid.add(move);
+            }
+        }
+        return valid;
+    }
+
+    private boolean isMoveValid(ChessMove move, ChessPosition pos, Collection<ChessMove> possibleMoves) {
+        ChessBoard board = mostRecent.game().getBoard();
+        ChessBoard cloned = (ChessBoard) board.clone();
+        cloned.addPiece(move.getEndPosition(), board.getPiece(pos));
+        cloned.addPiece(pos, null);
+        if (!possibleMoves.contains(move) | new ChessGame().isInCheckHelper(board.getPiece(pos).getTeamColor(), cloned)) {
+            return false;
+        }
+        return true;
     }
 }
