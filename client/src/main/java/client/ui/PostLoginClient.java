@@ -96,6 +96,7 @@ public class PostLoginClient {
             String upperColor = params[1].toUpperCase();
             boolean validColor = upperColor.equals("WHITE") | upperColor.equals("BLACK");
             if (validColor) {
+                Repl.chosenColor = upperColor;
                 ArrayList<GameData> games = facade.listGames(new ListRequest(PreLoginClient.auth)).getGames();
                 int fakeID = Integer.parseInt(params[0]);
                 if (fakeID <= games.size()) {
@@ -104,7 +105,7 @@ public class PostLoginClient {
                     facade.join(new JoinRequest(PreLoginClient.auth, upperColor, gameID));
                     Repl.joinedGame = true;
                     ws.connect(PreLoginClient.auth, gameID);
-                    gameClient.play(upperColor);
+//                    gameClient.printBoard(upperColor, games.get(fakeID-1));
                     return "Successfully joined game.";
                 }
                 throw new ResponseException("Error: invalid game ID");
@@ -118,8 +119,8 @@ public class PostLoginClient {
         ArrayList<GameData> games = facade.listGames(new ListRequest(PreLoginClient.auth)).getGames();
         int fakeID = Integer.parseInt(params[0]);
         if (fakeID <= games.size()) {
-            gameClient.observe();
             Repl.id = games.get(fakeID - 1).gameID();
+            gameClient.printBoard("WHITE", games.get(Repl.id));
             ws.connect(PreLoginClient.auth, Repl.id);
             Repl.joinedGame = true;
             return "Observing game " + params[0];

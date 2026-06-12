@@ -1,5 +1,6 @@
 package client.ui;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import chess.ChessPiece;
 import chess.ChessPosition;
@@ -9,8 +10,13 @@ import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
 import com.google.gson.Gson;
 import exception.ResponseException;
+import model.GameData;
 import ui.EscapeSequences;
+import websocket.messages.ErrorMessage;
+import websocket.messages.LoadGameMessage;
+import websocket.messages.NotificationMessage;
 import websocket.messages.ServerMessage;
+
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -19,6 +25,7 @@ import java.util.List;
 public class GameClient implements NotificationHandler {
     ServerFacade facade;
     WebSocketFacade ws;
+    public static GameData mostRecent;
 
     public GameClient(String url) {
         facade = new ServerFacade(url);
@@ -38,8 +45,19 @@ public class GameClient implements NotificationHandler {
     }
 
     public void notify(ServerMessage message) {
-        var msg = new Gson().toJson(message);
-        System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + msg);
+        String txt = null;
+        GameData game;
+        if (message instanceof NotificationMessage) {
+            txt = ((NotificationMessage) message).getMessage();
+        } else if (message instanceof ErrorMessage) {
+            txt = ((ErrorMessage) message).getErrorMessage();
+        } else if (message instanceof LoadGameMessage) {
+            game = ((LoadGameMessage) message).getGame();
+            mostRecent = game;
+            printBoard(Repl.chosenColor, game);
+            txt = new Gson().toJson(game);
+        }
+        System.out.println(EscapeSequences.SET_TEXT_COLOR_MAGENTA + txt);
         printPrompt();
     }
 
@@ -54,7 +72,7 @@ public class GameClient implements NotificationHandler {
             String[] params = Arrays.copyOfRange(tokens, 1, tokens.length);
 
             return switch (cmd) {
-//                case "redraw" -> redraw();
+                case "redraw" -> redraw();
                 case "leave" -> leave();
                 case "move" -> move(params);
                 case "resign" -> resign();
@@ -67,25 +85,23 @@ public class GameClient implements NotificationHandler {
         }
     }
 
-    public void play(String color) {
-        String[] playingColor = new String[]{color};
-        DrawBoard.main(playingColor);
+    // to observe, use this function and pass in "WHITE""
+    public void printBoard(String color, GameData game) {
+//        String[] playingColor = new String[]{color, new Gson().toJson(game)};
+        new DrawBoard().drawIt(color, game);
     }
 
-    public void observe() {
-        String[] playingColor = new String[]{"WHITE"};
-        DrawBoard.main(playingColor);
+    private String redraw() {
+        printBoard(Repl.chosenColor, mostRecent);
+        return "Board redrawn.";
     }
-
-//    private String redraw() {
-//
-//    }
 
     private String leave() {
         try {
             ws.leave(PreLoginClient.auth, Repl.id);
             Repl.joinedGame = false;
             Repl.id = null;
+            Repl.chosenColor = null;
             return "Left the game.";
 
         } catch (ResponseException e) {

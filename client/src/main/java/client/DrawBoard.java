@@ -3,7 +3,7 @@ package client;
 import chess.ChessBoard;
 import chess.ChessGame;
 import chess.ChessPiece;
-import com.google.gson.Gson;
+import model.GameData;
 
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
@@ -17,25 +17,17 @@ import static ui.EscapeSequences.BLACK_ROOK;
 
 public class DrawBoard {
 
-    private static final int BOARD_SIZE_IN_SQUARES = 8;
-    private static final int SQUARE_SIZE_IN_PADDED_CHARS = 1;
-    private static final int BORDER_WIDTH_IN_PADDED_CHARS = 1;
-    private static final int BORDER_SIZE_IN_PADDED_CHARS = 10;
+    private boolean oddRow = true;
 
-    public static String playingColor = "BLACK";
-
-    private static boolean oddRow = true;
-
-    public static void main(String[] args) {
-        playingColor = args[0];
-        ChessGame game = new Gson().fromJson(args[1], ChessGame.class);
+    public void drawIt(String playingColor, GameData gameData) {
+        ChessGame game = gameData.game();
         ChessBoard board = game.getBoard();
 
         var out = new PrintStream(System.out, false, StandardCharsets.UTF_8);
         out.print(ERASE_SCREEN);
 
         out.println();
-        drawBorderLine(out);
+        drawBorderLine(out, playingColor);
 
         if (playingColor.equals("BLACK")) {
             for (int i=0; i<8; i++) {
@@ -47,11 +39,11 @@ public class DrawBoard {
             }
         }
 
-        drawBorderLine(out);
+        drawBorderLine(out, playingColor);
         out.print(RESET_TEXT_COLOR);
     }
 
-    private static void printOneRow(int i, PrintStream out, ChessBoard board) {
+    private void printOneRow(int i, PrintStream out, ChessBoard board) {
         boolean isLight = true;
         ChessPiece[] row = board.board[i];
         setGreen(out);
@@ -83,7 +75,7 @@ public class DrawBoard {
         out.println();
     }
 
-    private static String getPiece(ChessPiece piece) {
+    private String getPiece(ChessPiece piece) {
         if (piece == null) { return EMPTY; }
         var type = piece.getPieceType();
         if (piece.getTeamColor().equals(ChessGame.TeamColor.WHITE)) {
@@ -104,7 +96,7 @@ public class DrawBoard {
         return null;
     }
 
-    private static void drawBorderLine(PrintStream out) {
+    private void drawBorderLine(PrintStream out, String playingColor) {
         setGreen(out);
         ArrayList<String> charsWhite = new ArrayList<>(List.of("a","b","c","d","e","f","g","h"));
         ArrayList<String> charsBlack = new ArrayList<>(List.of("h","g","f","e","d","c","b","a"));
@@ -124,17 +116,17 @@ public class DrawBoard {
         out.println();
     }
 
-    private static void setGreen(PrintStream out) {
+    private void setGreen(PrintStream out) {
         out.print(SET_BG_COLOR_GREEN);
         out.print(SET_TEXT_COLOR_DARK_GREY);
     }
 
-    private static void setDark(PrintStream out) {
+    private void setDark(PrintStream out) {
         out.print(SET_BG_COLOR_DARK_GREEN);
         out.print(SET_TEXT_COLOR_DARK_GREY);
     }
 
-    private static void setLight(PrintStream out) {
+    private void setLight(PrintStream out) {
         out.print(SET_BG_COLOR_BEIGE);
         out.print(SET_TEXT_COLOR_DARK_GREY);
     }
