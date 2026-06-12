@@ -71,7 +71,7 @@ public class DrawBoard {
                 isLight = true;
             }
         }
-        secondHalf(out);
+        secondHalf(out, i);
     }
 
     private ChessPiece[] firstHalf(boolean isLight, PrintStream out, ChessBoard board, int i){
@@ -89,7 +89,7 @@ public class DrawBoard {
         return row;
     }
 
-    private void secondHalf(PrintStream out) {
+    private void secondHalf(PrintStream out, int i) {
         setGreen(out);
         out.print(" " + Integer.toString(i+1) + " ");
         out.print(RESET_BG_COLOR);
@@ -137,7 +137,7 @@ public class DrawBoard {
                 isLight = true;
             }
         }
-        secondHalf(out);
+        secondHalf(out, i);
     }
 
     private String getPiece(ChessPiece piece) {
