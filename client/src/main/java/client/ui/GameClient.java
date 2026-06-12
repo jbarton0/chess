@@ -8,7 +8,6 @@ import client.DrawBoard;
 import client.ServerFacade;
 import client.websocket.NotificationHandler;
 import client.websocket.WebSocketFacade;
-import mysqldataaccess.GameDB;
 import exception.ResponseException;
 import model.GameData;
 import ui.EscapeSequences;
@@ -143,9 +142,8 @@ public class GameClient implements NotificationHandler {
         if (!cols.contains(s) | !cols.contains(e) | s2<1 | s2>8 | e2<1 | e2>8) {
             throw new ResponseException("Error: invalid move");
         }
-        GameData gameData = new GameDB().getGame(Repl.id);
         if (startPos != null) {
-            if (gameData.game().getBoard().getPiece(startPos) == null) {
+            if (mostRecent.game().getBoard().getPiece(startPos) == null) {
                 throw new ResponseException("Error: no piece in that position");
             }
         }
@@ -183,9 +181,8 @@ public class GameClient implements NotificationHandler {
 
     private String highlight(String... params) throws Exception {
         ChessPosition pos = findPos(params[0]);
-        GameData gameData = new GameDB().getGame(Repl.id);
         if (pos != null) {
-            if (gameData.game().getBoard().getPiece(pos) == null) {
+            if (mostRecent.game().getBoard().getPiece(pos) == null) {
                 throw new ResponseException("Error: no piece in that position");
             }
         }
