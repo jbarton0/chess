@@ -21,7 +21,6 @@ import java.util.Collection;
 
 
 public class GameDB implements GameDAO {
-
     UserDB userDB = new UserDB();
 
     public void clearGames() throws DataAccessException {
