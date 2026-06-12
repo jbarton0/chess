@@ -15,8 +15,6 @@ import model.GameData;
 import websocket.commands.MakeMoveCommand;
 import websocket.commands.UserGameCommand;
 import java.io.IOException;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jetty.websocket.api.Session;
 
@@ -179,7 +177,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
     }
 
     private boolean checkGameOver(Session session, GameData gameData) throws Exception {
-        if (gameData.game().GameOver) {
+        if (gameData.game().gameOver) {
             sendError(session, new ErrorMessage(ServerMessage.ServerMessageType.ERROR, "Error: game is over"));
             return true;
         }
@@ -195,7 +193,7 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         }
         if (checkGameOver(session, gameData)) { return; }
 
-        gameData.game().GameOver = true;
+        gameData.game().gameOver = true;
         gameDB.updateGameNoMove(gameData);
         String message = String.format("%s resigned. The game is now over", username);
         connections.broadcast(null, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
@@ -219,11 +217,4 @@ public class WebSocketHandler implements WsConnectHandler, WsMessageHandler, WsC
         connections.broadcast(session, new NotificationMessage(ServerMessage.ServerMessageType.NOTIFICATION, message), gameID);
         connections.remove(session, gameID);
     }
-
-//    private Integer getGameID(Session session) {
-//        for (Map.Entry<Integer, List<Session>> lst : connections.connections.entrySet()) {
-//            if (lst.getValue().contains(session)) { return lst.getKey(); }
-//        }
-//        return null;
-//    }
 }

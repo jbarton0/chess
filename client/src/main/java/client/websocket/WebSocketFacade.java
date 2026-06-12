@@ -41,13 +41,16 @@ public class WebSocketFacade extends Endpoint {
                     NotificationMessage msg1;
                     ErrorMessage msg2;
                     LoadGameMessage msg3;
-                    if (new Gson().fromJson(message, ServerMessage.class).getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
+                    if (new Gson().fromJson(message, ServerMessage.class)
+                            .getServerMessageType().equals(ServerMessage.ServerMessageType.NOTIFICATION)) {
                         msg1 = new Gson().fromJson(message, NotificationMessage.class);
                         notificationHandler.notify(msg1);
-                    } else if (new Gson().fromJson(message, ServerMessage.class).getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
+                    } else if (new Gson().fromJson(message, ServerMessage.class)
+                            .getServerMessageType().equals(ServerMessage.ServerMessageType.ERROR)) {
                         msg2 = new Gson().fromJson(message, ErrorMessage.class);
                         notificationHandler.notify(msg2);
-                    } else if (new Gson().fromJson(message, ServerMessage.class).getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
+                    } else if (new Gson().fromJson(message, ServerMessage.class)
+                            .getServerMessageType().equals(ServerMessage.ServerMessageType.LOAD_GAME)) {
                         msg3 = new Gson().fromJson(message, LoadGameMessage.class);
                         notificationHandler.notify(msg3);
                     }

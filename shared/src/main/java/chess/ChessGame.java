@@ -14,7 +14,7 @@ public class ChessGame {
 
     private TeamColor turn;
     private ChessBoard realBoard;
-    public boolean GameOver = false;
+    public boolean gameOver = false;
 
 
     public ChessGame() {
@@ -186,7 +186,7 @@ public class ChessGame {
         cloned.addPiece(move.getEndPosition(), realBoard.getPiece(startPos));
         cloned.addPiece(startPos, null);
         if (isInCheckHelper(realBoard.getPiece(startPos).getTeamColor(), cloned)) {
-            GameOver = true;
+            gameOver = true;
             return true;
         }
         return false;
@@ -225,7 +225,7 @@ public class ChessGame {
         }
 
         if (valid.isEmpty() && !possible.isEmpty() && noValidMoves && !isInCheckHelper(teamColor, realBoard)) {
-            GameOver = true;
+            gameOver = true;
             return true;
         }
         return false;

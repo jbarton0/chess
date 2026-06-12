@@ -48,17 +48,7 @@ public class DrawBoard {
     private void printHighlightRow(int i, PrintStream out, ChessBoard board, Collection<String> validMoves, String chosen) {
 
         boolean isLight = true;
-        ChessPiece[] row = board.board[i];
-        setGreen(out);
-        out.print(" " + Integer.toString(i+1) + " ");
-        if (oddRow) {
-            setLight(out);
-            oddRow = false;
-        } else {
-            setDark(out);
-            isLight = false;
-            oddRow = true;
-        }
+        ChessPiece[] row = firstHalf(isLight, out, board, i);
 
         for (int j=0; j<8; j++) {
             ChessPiece p = row[j];
@@ -81,6 +71,25 @@ public class DrawBoard {
                 isLight = true;
             }
         }
+        secondHalf(out);
+    }
+
+    private ChessPiece[] firstHalf(boolean isLight, PrintStream out, ChessBoard board, int i){
+        ChessPiece[] row = board.board[i];
+        setGreen(out);
+        out.print(" " + Integer.toString(i+1) + " ");
+        if (oddRow) {
+            setLight(out);
+            oddRow = false;
+        } else {
+            setDark(out);
+            isLight = false;
+            oddRow = true;
+        }
+        return row;
+    }
+
+    private void secondHalf(PrintStream out) {
         setGreen(out);
         out.print(" " + Integer.toString(i+1) + " ");
         out.print(RESET_BG_COLOR);
@@ -114,17 +123,7 @@ public class DrawBoard {
 
     private void printOneRow(int i, PrintStream out, ChessBoard board) {
         boolean isLight = true;
-        ChessPiece[] row = board.board[i];
-        setGreen(out);
-        out.print(" " + Integer.toString(i+1) + " ");
-        if (oddRow) {
-            setLight(out);
-            oddRow = false;
-        } else {
-            setDark(out);
-            isLight = false;
-            oddRow = true;
-        }
+        ChessPiece[] row = firstHalf(isLight, out, board, i);
 
         for (int j=0; j<8; j++) {
             ChessPiece p = row[j];
@@ -138,10 +137,7 @@ public class DrawBoard {
                 isLight = true;
             }
         }
-        setGreen(out);
-        out.print(" " + Integer.toString(i+1) + " ");
-        out.print(RESET_BG_COLOR);
-        out.println();
+        secondHalf(out);
     }
 
     private String getPiece(ChessPiece piece) {

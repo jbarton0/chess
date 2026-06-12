@@ -58,7 +58,8 @@ public class Repl {
                 try {
                     result = gameClient.eval(line);
                     if (result.equals("resignConfirm")) {
-                        System.out.print("\nAre you sure you want to resign? <yes/no> >>> " + EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD);
+                        System.out.print("\nAre you sure you want to resign? <yes/no> >>> "
+                                + EscapeSequences.SET_TEXT_COLOR_BLUE + EscapeSequences.SET_TEXT_BOLD);
                         line = scanner.nextLine();
                         result = gameClient.resign(line);
                     }
